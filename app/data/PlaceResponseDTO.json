@@ -1,0 +1,88 @@
+{
+  "placeId": "d290f1ee-6c54-4b01-90e6-d701748f0851",
+  "name": "Bar Central",
+  "description": "A cozy bar in the heart of Skopje with a great atmosphere.",
+  "mapsUri": "https://maps.google.com/?q=Bar+Central",
+  "phoneNumber": "+38970123456",
+  "address": "Makedonija Street 25, Skopje",
+  "rating": 4.5,
+  "menuLink": "https://barcentral.mk/menu",
+  "primaryType": "BAR",
+  "priceLevel": "MODERATE",
+  "images": [
+    "https://cdn.barcentral.mk/img1.jpg",
+    "https://cdn.barcentral.mk/img2.jpg"
+  ],
+  "topTraits": [
+    {
+      "traitId": "0eaf63de-7586-4b6f-942f-7b95df9c3dd5",
+      "traitType": "DRINK",
+      "name": "Craft Beer"
+    },
+    {
+      "traitId": "1edb77ac-8cbe-4dd4-b315-2eb8495abf33",
+      "traitType": "VIBE",
+      "name": "Cozy"
+    }
+  ],
+  "dailyEvents": [
+    {
+      "eventName": "Live Jazz Night",
+      "placeName": "Bar Central",
+      "description": "Enjoy live jazz performances every Wednesday.",
+      "startDate": "2025-07-02T20:00:00",
+      "endDate": "2025-07-02T23:00:00",
+      "images": ["https://cdn.barcentral.mk/events/jazz1.jpg"]
+    },
+    {
+      "eventName": "Live Jazz Night",
+      "placeName": "Bar Central",
+      "description": "Enjoy live jazz performances every Wednesday.",
+      "startDate": "2025-07-02T20:00:00",
+      "endDate": "2025-07-02T23:00:00",
+      "images": ["https://cdn.barcentral.mk/events/jazz1.jpg"]
+    }
+  ],
+  "dailyOffers": [
+    {
+      "name": "Happy Hour",
+      "startDate": "2025-07-01T17:00:00",
+      "endDate": "2025-07-01T19:00:00",
+      "description": "50% off on all cocktails!",
+      "image": "iVBORw0KGgoAAAANSUhEUgAA..."
+    },
+    {
+      "name": "Happy Hour",
+      "startDate": "2025-07-01T17:00:00",
+      "endDate": "2025-07-01T19:00:00",
+      "description": "50% off on all cocktails!",
+      "image": "iVBORw0KGgoAAAANSUhEUgAA..."
+    }
+  ],
+  "monthlyEvents": [
+    {
+      "eventName": "Summer Opening Party",
+      "placeName": "Bar Central",
+      "description": "Kick off the summer with a bang! DJ and free shots!",
+      "startDate": "2025-07-05T21:00:00",
+      "endDate": "2025-07-06T03:00:00",
+      "images": ["https://cdn.barcentral.mk/events/summer.jpg"]
+    },
+    {
+      "eventName": "Summer Opening Party",
+      "placeName": "Bar Central",
+      "description": "Kick off the summer with a bang! DJ and free shots!",
+      "startDate": "2025-07-05T21:00:00",
+      "endDate": "2025-07-06T03:00:00",
+      "images": ["https://cdn.barcentral.mk/events/summer.jpg"]
+    }
+  ],
+  "carouselTraits": [
+    {
+      "name": "Cocktail Mastery"
+    },
+    {
+      "name": "Chill Vibes"
+    }
+  ]
+}

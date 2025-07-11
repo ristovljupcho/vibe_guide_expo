@@ -1,0 +1,82 @@
+[
+  {
+    "eventName": "Live Music Night",
+    "placeName": "Bar Centar",
+    "description": "Live music night with local bands and craft beer tasting.",
+    "startDate": "2025-06-26T18:00:00",
+    "endDate": "2025-06-26T23:00:00",
+    "images": ["aW1hZ2VEYXRhMQ=="]
+  },
+  {
+    "eventName": "Jazz Cocktail Hour",
+    "placeName": "Jazz Corner",
+    "description": "Smooth jazz sessions and 2-for-1 on all cocktails.",
+    "startDate": "2025-06-26T20:00:00",
+    "endDate": "2025-06-27T01:00:00",
+    "images": ["aW1hZ2VEYXRhMg=="]
+  },
+  {
+    "eventName": "Italian Wine Night",
+    "placeName": "Wine & Dine",
+    "description": "Italian night with romantic atmosphere and wine pairings.",
+    "startDate": "2025-06-26T19:00:00",
+    "endDate": "2025-06-26T22:00:00",
+    "images": ["aW1hZ2VEYXRhMw=="]
+  },
+  {
+    "eventName": "Sunset Lounge",
+    "placeName": "Sky Lounge",
+    "description": "Sunset cocktails with a city view on our rooftop bar.",
+    "startDate": "2025-06-26T18:30:00",
+    "endDate": "2025-06-26T23:30:00",
+    "images": ["aW1hZ2VEYXRhNA=="]
+  },
+  {
+    "eventName": "Underground Techno Rave",
+    "placeName": "Techno Cave",
+    "description": "Underground techno rave with live DJs and laser show.",
+    "startDate": "2025-06-27T22:00:00",
+    "endDate": "2025-06-28T04:00:00",
+    "images": ["aW1hZ2VEYXRhNQ=="]
+  },
+  {
+    "eventName": "Burger Fest",
+    "placeName": "Burger Town",
+    "description": "Burger combo deals with fries and soft drinks included.",
+    "startDate": "2025-06-26T12:00:00",
+    "endDate": "2025-06-26T20:00:00",
+    "images": ["aW1hZ2VEYXRhNg=="]
+  },
+  {
+    "eventName": "Vibe DJ Night",
+    "placeName": "The Vibe Spot",
+    "description": "Trendy vibes, guest DJs and special mixed drinks menu.",
+    "startDate": "2025-06-26T19:00:00",
+    "endDate": "2025-06-26T23:00:00",
+    "images": ["aW1hZ2VEYXRhNw=="]
+  },
+  {
+    "eventName": "Retro Game Night",
+    "placeName": "Retro Pub",
+    "description": "Board games night with retro music and drink discounts.",
+    "startDate": "2025-06-26T17:00:00",
+    "endDate": "2025-06-26T22:00:00",
+    "images": ["aW1hZ2VEYXRhOA=="]
+  },
+  {
+    "eventName": "EDM Dance Party",
+    "placeName": "Electro Nights",
+    "description": "High energy EDM party with laser lights and dance battles.",
+    "startDate": "2025-06-27T21:00:00",
+    "endDate": "2025-06-28T03:00:00",
+    "images": ["aW1hZ2VEYXRhOQ=="]
+  },
+  {
+    "eventName": "Family Pasta Lunch",
+    "placeName": "Pasta Place",
+    "description": "Family lunch menu with pasta dishes and free desserts for kids.",
+    "startDate": "2025-06-26T11:00:00",
+    "endDate": "2025-06-26T15:00:00",
+    "images": ["aW1hZ2VEYXRhMTA="]
+  }
+]
