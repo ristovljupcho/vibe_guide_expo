@@ -14,24 +14,18 @@ export const textStyles = StyleSheet.create({
   bodyText: {
     fontSize: 14,
   },
+  buttonText: {
+    fontSize: 14,
+    color: "#FB654A",
+  },
   subheadingText: {
     fontSize: 16,
   },
   headingText: {
     fontSize: 20,
   },
-  buttonText: {
-    fontSize: 16,
-  },
   boldText: {
     fontFamily: "Poppins_700Bold",
-  },
-  suggestionText: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    marginTop: 8,
-    marginBottom: 8,
   },
   groupContainer: {
     marginBottom: 16,
