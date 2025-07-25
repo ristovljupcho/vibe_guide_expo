@@ -2,83 +2,70 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import DailyOfferDisplay from "./daily-offers-display";
 import EventDisplay from "./events-display";
+import QuickSearch from "./quick-search";
+
 // Styles
+import { sharedStyles } from "@/styles/sharedStyles";
 import { textStyles } from "@/styles/textStyles";
 
-export default function MainPage() {
+export default function Index() {
   return (
     <ScrollView
-      className="bg-slate-800 pt-10"
+      style={sharedStyles.mainContainer}
       contentContainerStyle={{
         flexGrow: 1,
-        padding: 16,
-        alignItems: "flex-start", // align content to start horizontally
+        alignItems: "flex-start",
       }}
       showsVerticalScrollIndicator={false}
     >
+      <QuickSearch />
       {/* UPCOMMING EVENTS CAROUSEL */}
       <View style={textStyles.groupContainer}>
-        <Text
-          style={[textStyles.text, textStyles.headingText]}
-          className="self-center mb-2"
-        >
-          Upcomming events!
-        </Text>
-
-        <EventDisplay />
-
-        {/* LINK VIEW MORE */}
-        <View style={textStyles.suggestionText}>
-          <Text style={[textStyles.text, textStyles.captionsText]}>
-            Not finding what you need?{" "}
+        <View style={[sharedStyles.informationRow]}>
+          <Text style={[textStyles.text, textStyles.headingText]}>
+            Today's DAILY OFFERS!
           </Text>
-
+          {/* LINK VIEW MORE */}
           <Link href={"/(main-page)/daily-offer-card"} asChild>
-            <Pressable>
+            <Pressable style={sharedStyles.button}>
               <Text
                 style={[
                   textStyles.text,
                   textStyles.captionsText,
-                  textStyles.boldText,
+                  textStyles.buttonText,
                 ]}
               >
-                View more!
+                See all
               </Text>
             </Pressable>
           </Link>
         </View>
+
+        <EventDisplay />
       </View>
       {/* DAILY OFFERS CAROUSEL */}
       <View style={textStyles.groupContainer}>
-        <Text
-          style={[textStyles.text, textStyles.headingText]}
-          className="self-center mb-2"
-        >
-          Today's DAILY OFFERS!
-        </Text>
-
-        <DailyOfferDisplay />
-
-        <View style={textStyles.suggestionText}>
-          <Text style={[textStyles.text, textStyles.captionsText]}>
-            Not finding what you need?{" "}
+        <View style={[sharedStyles.informationRow]}>
+          <Text style={[textStyles.text, textStyles.headingText]}>
+            Today's DAILY OFFERS!
           </Text>
-
           {/* LINK VIEW MORE */}
           <Link href={"/(main-page)/daily-offer-card"} asChild>
-            <Pressable>
+            <Pressable style={sharedStyles.button}>
               <Text
                 style={[
                   textStyles.text,
                   textStyles.captionsText,
-                  textStyles.boldText,
+                  textStyles.buttonText,
                 ]}
               >
-                View more!
+                See all
               </Text>
             </Pressable>
           </Link>
         </View>
+
+        <DailyOfferDisplay />
       </View>
     </ScrollView>
   );
