@@ -3,8 +3,7 @@ import { StyleSheet } from "react-native";
 
 export const sharedStyles = StyleSheet.create({
   mainContainer: {
-    backgroundColor: "#222831",
-    paddingVertical: 45,
+    paddingTop: 40,
     paddingHorizontal: 8,
   },
   button: {
@@ -21,5 +20,9 @@ export const sharedStyles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
+  },
+  customBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255, 255, 255, 0.12)",
   },
 });
