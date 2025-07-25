@@ -2,11 +2,13 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import DailyOfferDisplay from "./daily-offers-display";
 import EventDisplay from "./events-display";
-// Styles
-import { textStyles } from "@/styles/textStyles";
-import { sharedStyles } from "@/styles/sharedStyles";
+import QuickSearch from "./quick-search";
 
-export default function MainPage() {
+// Styles
+import { sharedStyles } from "@/styles/sharedStyles";
+import { textStyles } from "@/styles/textStyles";
+
+export default function Index() {
   return (
     <ScrollView
       style={sharedStyles.mainContainer}
@@ -16,6 +18,7 @@ export default function MainPage() {
       }}
       showsVerticalScrollIndicator={false}
     >
+      <QuickSearch />
       {/* UPCOMMING EVENTS CAROUSEL */}
       <View style={textStyles.groupContainer}>
         <View style={[sharedStyles.informationRow]}>
