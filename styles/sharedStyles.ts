@@ -3,8 +3,10 @@ import { StyleSheet } from "react-native";
 
 export const sharedStyles = StyleSheet.create({
   mainContainer: {
-    paddingTop: 40,
+    paddingTop: 10,
     paddingHorizontal: 8,
+    backgroundColor: "#121212",
+    flex: 1,
   },
   button: {
     backgroundColor: "rgba(251, 101, 74, 0.15)", // 15% opacity
