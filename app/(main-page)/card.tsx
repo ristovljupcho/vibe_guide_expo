@@ -6,28 +6,31 @@ import {
   ImageSourcePropType,
   StyleSheet,
 } from "react-native";
-// Styles
 import { LinearGradient } from "expo-linear-gradient";
 import { textStyles } from "@/styles/textStyles";
-import { cardStyles } from "@/styles/cardStyles";
-import { cardGradientFrom } from "@/styles/cardStyles";
-import { cardGradientTo } from "@/styles/cardStyles";
+import {
+  cardStyles,
+  cardGradientFrom,
+  cardGradientTo,
+} from "@/styles/cardStyles";
 
-type DailyOfferCardProps = {
-  name: string;
+export type CardProps = {
+  eventName?: string;
+  placeName: string;
   startDate: string;
   endDate: string;
   description: string;
   image: ImageSourcePropType;
 };
 
-export default function DailyOfferCard({
-  name,
+export default function Card({
+  eventName,
+  placeName,
   startDate,
   endDate,
   description,
   image,
-}: DailyOfferCardProps) {
+}: CardProps) {
   const start = new Date(startDate);
   const end = new Date(endDate);
   const now = new Date();
@@ -40,8 +43,10 @@ export default function DailyOfferCard({
   const formatTime = (date: Date) =>
     date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
+  const isEvent = !!eventName;
+
   return (
-    <View style={cardStyles.card}>
+    <View style={cardStyles.card} className="bg-slate-400">
       <Image
         source={image}
         style={[
@@ -58,7 +63,9 @@ export default function DailyOfferCard({
 
       {isToday && (
         <View style={cardStyles.badge}>
-          <Text style={cardStyles.badgeText}>AVAILABLE NOW</Text>
+          <Text style={cardStyles.badgeText}>
+            {isEvent ? "TODAY" : "AVAILABLE NOW"}
+          </Text>
         </View>
       )}
 
@@ -66,8 +73,13 @@ export default function DailyOfferCard({
         <Text
           style={[textStyles.text, textStyles.headingText, textStyles.boldText]}
         >
-          {name}
+          {isEvent ? eventName : placeName}
         </Text>
+        {isEvent && (
+          <Text style={[textStyles.text, textStyles.subheadingText]}>
+            {placeName}
+          </Text>
+        )}
         <Text style={[textStyles.text, textStyles.captionsText]}>
           {formatTime(start)} - {formatTime(end)}
         </Text>

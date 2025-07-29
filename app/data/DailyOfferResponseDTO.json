@@ -1,72 +1,23 @@
 [
   {
-    "name": "Bar Centar",
-    "startDate": "2025-07-10T18:00:00",
-    "endDate": "2025-07-11T18:00:00",
-    "description": "Live music night with local bands and craft beer tasting.",
+    "placeName": "Bavarian Biergarten",
+    "startDate": "2025-10-04T16:00:00",
+    "endDate": "2025-10-04T18:00:00",
+    "description": "Try a flight of 4 German beers for the price of 3 during Oktoberfest!",
     "image": "aW1hZ2VEYXRhMQ=="
   },
   {
-    "name": "Jazz Corner",
-    "startDate": "2025-06-26T20:00:00",
-    "endDate": "2025-06-27T01:00:00",
-    "description": "Smooth jazz sessions and 2-for-1 on all cocktails.",
+    "placeName": "Spooky Manor",
+    "startDate": "2025-10-31T20:00:00",
+    "endDate": "2025-10-31T22:00:00",
+    "description": "Buy one spooky shot, get another free at our Halloween Party!",
     "image": "aW1hZ2VEYXRhMg=="
   },
   {
-    "name": "Wine & Dine",
-    "startDate": "2025-07-26T19:00:00",
-    "endDate": "2025-08-26T22:00:00",
-    "description": "Italian night with romantic atmosphere and wine pairings.",
+    "placeName": "The Mixology Lounge",
+    "startDate": "2025-11-01T18:00:00",
+    "endDate": "2025-11-01T20:00:00",
+    "description": "Sample 3 signature cocktails for a special price at our Cocktail Party!",
     "image": "aW1hZ2VEYXRhMw=="
-  },
-  {
-    "name": "Sky Lounge",
-    "startDate": "2025-06-26T18:30:00",
-    "endDate": "2025-06-26T23:30:00",
-    "description": "Sunset cocktails with a city view on our rooftop bar.",
-    "image": "aW1hZ2VEYXRhNA=="
-  },
-  {
-    "name": "Techno Cave",
-    "startDate": "2025-06-27T22:00:00",
-    "endDate": "2025-06-28T04:00:00",
-    "description": "Underground techno rave with live DJs and laser show.",
-    "image": "aW1hZ2VEYXRhNQ=="
-  },
-  {
-    "name": "Burger Town",
-    "startDate": "2025-06-26T12:00:00",
-    "endDate": "2025-06-26T20:00:00",
-    "description": "Burger combo deals with fries and soft drinks included.",
-    "image": "aW1hZ2VEYXRhNg=="
-  },
-  {
-    "name": "The Vibe Spot",
-    "startDate": "2025-06-26T19:00:00",
-    "endDate": "2025-06-26T23:00:00",
-    "description": "Trendy vibes, guest DJs and special mixed drinks menu.",
-    "image": "aW1hZ2VEYXRhNw=="
-  },
-  {
-    "name": "Retro Pub",
-    "startDate": "2025-06-26T17:00:00",
-    "endDate": "2025-06-26T22:00:00",
-    "description": "Board games night with retro music and drink discounts.",
-    "image": "aW1hZ2VEYXRhOA=="
-  },
-  {
-    "name": "Electro Nights",
-    "startDate": "2025-06-27T21:00:00",
-    "endDate": "2025-06-28T03:00:00",
-    "description": "High energy EDM party with laser lights and dance battles.",
-    "image": "aW1hZ2VEYXRhOQ=="
-  },
-  {
-    "name": "Pasta Place",
-    "startDate": "2025-06-26T11:00:00",
-    "endDate": "2025-06-26T15:00:00",
-    "description": "Family lunch menu with pasta dishes and free desserts for kids.",
-    "image": "aW1hZ2VEYXRhMTA="
   }
 ]
