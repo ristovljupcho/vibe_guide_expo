@@ -1,8 +1,8 @@
 // Styles used for card
 import { StyleSheet } from "react-native";
 
-export const cardGradientFrom = "rgba(0,0,0,0.2)";
-export const cardGradientTo = "rgba(0,0,0,1)";
+export const cardGradientFrom = "rgba(0,0,0,0.1)";
+export const cardGradientTo = "rgba(0,0,0,0.8)";
 
 export const cardStyles = StyleSheet.create({
   card: {
