@@ -1,10 +1,17 @@
-import { ScrollView, View, SafeAreaView, Dimensions } from "react-native";
+import {
+  ScrollView,
+  View,
+  SafeAreaView,
+  Dimensions,
+  Button,
+} from "react-native";
 import Footer from "../(shared-components)/footer";
 import { sharedStyles } from "@/styles/sharedStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CarouselSection from "./carousel-section";
 import { CardProps } from "./card";
 import QuickSearch from "./quick-search";
+import { Link } from "expo-router";
 
 // Events
 const events: CardProps[] = [
@@ -99,6 +106,9 @@ export default function Index() {
           buttonLink="/(main-page)/daily-offer-card"
           cards={events}
         />
+        <Link href="/(register)" asChild>
+          <Button title="Go to Register" />
+        </Link>
       </ScrollView>
       <View style={{ height: footerHeight, marginBottom: insets.bottom }}>
         <Footer />
