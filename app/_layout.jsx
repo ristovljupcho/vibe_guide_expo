@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import { Slot } from "expo-router";
 import { Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../constants/colors";
 import "../global.css";
 
 export default function RootLayout() {
@@ -22,7 +23,7 @@ export default function RootLayout() {
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
         <Slot />
       </SafeAreaView>
     </ClerkProvider>
