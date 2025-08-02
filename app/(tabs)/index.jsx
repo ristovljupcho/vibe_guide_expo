@@ -1,10 +1,5 @@
-import { Text } from "@react-navigation/elements";
 import { View } from "react-native";
-
+import { homeStyles } from "../../assets/styles/home.styles";
 export default function HomeScreen() {
-  return (
-    <View>
-      <Text>HomeScreen</Text>
-    </View>
-  );
+  return <View style={homeStyles.container}></View>;
 }

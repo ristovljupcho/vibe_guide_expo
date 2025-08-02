@@ -3,6 +3,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, Tabs } from "expo-router";
 import React from "react";
 import { COLORS } from "../../constants/colors";
+
 function TabsLayout() {
   // Authentication
   const { isSignedIn } = useAuth();
