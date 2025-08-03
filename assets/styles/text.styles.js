@@ -23,7 +23,6 @@ export const textStyles = StyleSheet.create({
   heading3Text: {
     fontFamily: "Lato_700Bold",
     fontSize: 20,
-    color: "#FAF6F9",
   },
   heading2Text: {
     fontFamily: "Lato_700Bold",
@@ -32,6 +31,11 @@ export const textStyles = StyleSheet.create({
   },
   heading1Text: {
     fontFamily: "Lato_900Black",
+    fontSize: 32,
+    color: "#FAF6F9",
+  },
+  headingItalicText: {
+    fontFamily: "Lato_900Black_Italic",
     fontSize: 32,
     color: "#FAF6F9",
   },

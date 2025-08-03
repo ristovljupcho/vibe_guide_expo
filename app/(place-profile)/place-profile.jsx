@@ -1,28 +1,17 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useEffect, useRef, useState } from "react";
-import {
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { traits } from "../../assets/data/traits.json";
+import { useState } from "react";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { homeStyles } from "../../assets/styles/home.styles";
 import { placeProfileStyles } from "../../assets/styles/place-profile.styles";
-import { textStyles } from "../../assets/styles/text.style";
+import { textStyles } from "../../assets/styles/text.styles";
+import ImageCarousel from "../../components/ImageCarousel";
+import TraitCarousel from "../../components/TraitCarousel";
 import { COLORS } from "../../constants/colors";
 
 function PlaceProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const flatListRef = useRef(null);
-  const scrollOffsetRef = useRef(0);
-
-  // Duplicate traits for infinite scrolling (e.g., 10 copies to ensure smooth looping)
-  const extendedTraits = Array(10).fill(traits).flat();
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -40,57 +29,6 @@ function PlaceProfileScreen({ navigation }) {
     }
   };
 
-  // Smooth continuous scrolling
-  useEffect(() => {
-    let animationFrameId;
-    const itemWidth = 150; // traitItem width (134) + marginHorizontal (8 + 8)
-    const originalDataLength = traits.length * itemWidth;
-    const scrollSpeed = 0.5; // Pixels per frame (adjust for faster/slower scrolling)
-
-    const scroll = () => {
-      if (flatListRef.current) {
-        scrollOffsetRef.current += scrollSpeed;
-        // Reset to start of original data when reaching the end
-        if (scrollOffsetRef.current >= originalDataLength) {
-          scrollOffsetRef.current = 0;
-          flatListRef.current.scrollToOffset({
-            offset: 0,
-            animated: false, // Instant reset for seamless loop
-          });
-        } else {
-          flatListRef.current.scrollToOffset({
-            offset: scrollOffsetRef.current,
-            animated: false, // Smooth scrolling without visible animation jumps
-          });
-        }
-      }
-      animationFrameId = requestAnimationFrame(scroll);
-    };
-
-    animationFrameId = requestAnimationFrame(scroll);
-
-    return () => cancelAnimationFrame(animationFrameId); // Cleanup on unmount
-  }, []);
-
-  // Handle trait item press
-  const handleTraitPress = (trait) => {
-    navigation.navigate("TraitDetails", { trait });
-    // Alternatively, for external links:
-    // Linking.openURL(`https://example.com/traits/${trait.toLowerCase()}`);
-  };
-
-  // Render each trait item
-  const renderTraitItem = ({ item }) => (
-    <TouchableOpacity
-      style={placeProfileStyles.traitItem}
-      onPress={() => handleTraitPress(item)}
-    >
-      <Text style={[textStyles.bodyText, placeProfileStyles.traitText]}>
-        {item}
-      </Text>
-    </TouchableOpacity>
-  );
-
   return (
     <View style={homeStyles.container}>
       <ScrollView
@@ -104,49 +42,67 @@ function PlaceProfileScreen({ navigation }) {
         }
         contentContainerStyle={homeStyles.scrollContent}
       >
-        {/* Information Section */}
-        <View style={placeProfileStyles.infoCard}>
-          <Text style={[textStyles.heading1Text, placeProfileStyles.heading]}>
-            Casa Bar
-          </Text>
-
-          <View style={placeProfileStyles.infoRow}>
-            <AntDesign name="staro" size={24} color="#FAF6F9" />
-            <Text style={[textStyles.bodyText, placeProfileStyles.infoText]}>
-              4.3
-            </Text>
-          </View>
-
-          <View style={placeProfileStyles.infoRow}>
-            <Ionicons name="location-outline" size={24} color="#FAF6F9" />
-            <Text style={[textStyles.bodyText, placeProfileStyles.infoText]}>
-              st. Tiranska 1b
-            </Text>
-          </View>
-
-          <View style={placeProfileStyles.infoRow}>
-            <Ionicons name="timer-outline" size={24} color="#FAF6F9" />
-            <Text style={[textStyles.bodyText, placeProfileStyles.infoText]}>
-              st. Tiranska 1b
-            </Text>
-          </View>
-        </View>
+        <Text
+          style={[textStyles.headingItalicText, placeProfileStyles.heading]}
+        >
+          Casa Bar
+        </Text>
 
         {/* Images Section (Carousel) */}
-        <View></View>
+        <ImageCarousel />
 
         {/* Traits Section (Carousel) */}
-        <View style={placeProfileStyles.traitsSection}>
-          <FlatList
-            ref={flatListRef}
-            data={extendedTraits}
-            renderItem={renderTraitItem}
-            keyExtractor={(item, index) => `${item}-${index}`}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={placeProfileStyles.traitsContainer}
-            scrollEnabled={false}
-          />
+        <TraitCarousel />
+
+        {/* Information Section */}
+        <View style={placeProfileStyles.infoCard}>
+          <View style={placeProfileStyles.infoSection}>
+            <View style={placeProfileStyles.infoRow}>
+              <AntDesign name="star" size={16} color="#FFDE21" />
+              <Text
+                style={[
+                  textStyles.informationsText,
+                  placeProfileStyles.infoText,
+                ]}
+              >
+                4.3
+              </Text>
+            </View>
+            <View style={[placeProfileStyles.infoRow, { marginTop: 10 }]}>
+              <Ionicons name="location-outline" size={16} color="#FAF6F9" />
+              <Text
+                style={[
+                  textStyles.informationsText,
+                  placeProfileStyles.infoText,
+                ]}
+              >
+                st. Tiranska 1b
+              </Text>
+            </View>
+          </View>
+          <View style={placeProfileStyles.workingHoursSection}>
+            <AntDesign name="clockcircleo" size={16} color="#FAF6F9" />
+            <View>
+              <Text
+                style={[
+                  textStyles.informationsText,
+                  placeProfileStyles.infoText,
+                ]}
+              >
+                Fri - Sat : 08:00 to 01:00
+              </Text>
+              <Text
+                style={[
+                  textStyles.informationsText,
+                  placeProfileStyles.infoText,
+                  ,
+                  { marginTop: 10 },
+                ]}
+              >
+                Sun - Thu : 08:00 to 00:00
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Description Section */}
