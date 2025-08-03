@@ -14,6 +14,7 @@
     "@clerk/clerk-expo": "^2.14.14",
     "@expo-google-fonts/antic-didone": "^0.4.0",
     "@expo-google-fonts/dm-serif-display": "^0.4.1",
+    "@expo-google-fonts/lato": "^0.4.0",
     "@expo-google-fonts/poppins": "^0.4.0",
     "@expo/vector-icons": "^14.1.0",
     "@react-navigation/bottom-tabs": "^7.3.10",

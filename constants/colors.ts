@@ -22,7 +22,7 @@ const forestTheme = {
 
 const purpleTheme = {
   primary: "#6A1B9A",
-  background: "#F3E5F5",
+  background: "#121212",
   text: "#4A148C",
   border: "#D1C4E9",
   white: "#FFFFFF",

@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 const { width } = Dimensions.get("window");
@@ -184,73 +184,5 @@ export const homeStyles = StyleSheet.create({
   },
   selectedCategoryText: {
     color: COLORS.white,
-  },
-});
-
-export const recipeCardStyles = StyleSheet.create({
-  container: {
-    width: cardWidth,
-    backgroundColor: COLORS.card,
-    borderRadius: 16,
-    marginBottom: 16,
-    shadowColor: COLORS.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    overflow: "hidden",
-  },
-  imageContainer: {
-    position: "relative",
-    height: 140,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: COLORS.border,
-  },
-  content: {
-    padding: 12,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: COLORS.text,
-    marginBottom: 4,
-    lineHeight: 20,
-  },
-  description: {
-    fontSize: 12,
-    color: COLORS.textLight,
-    marginBottom: 8,
-    lineHeight: 16,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  timeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  timeText: {
-    fontSize: 11,
-    color: COLORS.textLight,
-    marginLeft: 4,
-    fontWeight: "500",
-  },
-  servingsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  servingsText: {
-    fontSize: 11,
-    color: COLORS.textLight,
-    marginLeft: 4,
-    fontWeight: "500",
   },
 });
