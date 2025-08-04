@@ -1,17 +1,21 @@
+import { events } from "@/assets/data/events";
+import { offers } from "@/assets/data/offers";
+import ImageCarousel from "@/components/ImageCarousel";
+import TraitCarousel from "@/components/TraitCarousel";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { traits } from "../../assets/data/traits.json";
 import { homeStyles } from "../../assets/styles/home.styles";
 import { placeProfileStyles } from "../../assets/styles/place-profile.styles";
 import { textStyles } from "../../assets/styles/text.styles";
-import ImageCarousel from "../../components/ImageCarousel";
-import TraitCarousel from "../../components/TraitCarousel";
+import CardCarousel from "../../components/CardCarousel";
 import { COLORS } from "../../constants/colors";
 
-function PlaceProfileScreen({ navigation }) {
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+function PlaceProfileScreen() {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -22,6 +26,8 @@ function PlaceProfileScreen({ navigation }) {
   const loadData = async () => {
     try {
       setLoading(true);
+      // Add actual data fetching logic here if needed
+      // Example: const fetchedEvents = await fetchEvents();
     } catch (error) {
       console.log("Error loading the data", error);
     } finally {
@@ -52,7 +58,7 @@ function PlaceProfileScreen({ navigation }) {
         <ImageCarousel />
 
         {/* Traits Section (Carousel) */}
-        <TraitCarousel />
+        <TraitCarousel traits={traits} />
 
         {/* Information Section */}
         <View style={placeProfileStyles.infoCard}>
@@ -95,8 +101,7 @@ function PlaceProfileScreen({ navigation }) {
                 style={[
                   textStyles.informationsText,
                   placeProfileStyles.infoText,
-                  ,
-                  { marginTop: 10 },
+                  { marginTop: 10 }, // Fixed syntax error
                 ]}
               >
                 Sun - Thu : 08:00 to 00:00
@@ -117,6 +122,26 @@ function PlaceProfileScreen({ navigation }) {
             whether you want to mingle through the crowd and dance the night
             away.
           </Text>
+        </View>
+
+        {/* Events Carousel */}
+        <View style={placeProfileStyles.carouselSection}>
+          <Text
+            style={[placeProfileStyles.carouselTitle, textStyles.heading2Text]}
+          >
+            Our events
+          </Text>
+          <CardCarousel cards={events} />
+        </View>
+
+        {/* Offers Carousel */}
+        <View style={placeProfileStyles.carouselSection}>
+          <Text
+            style={[placeProfileStyles.carouselTitle, textStyles.heading2Text]}
+          >
+            Offers for you
+          </Text>
+          <CardCarousel cards={offers} />
         </View>
       </ScrollView>
     </View>

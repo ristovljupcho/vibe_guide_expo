@@ -1,30 +1,31 @@
-import { useRef, useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import React, { useRef, useState } from "react";
+import {
+  FlatList,
+  Image,
+  ImageSourcePropType,
+  ListRenderItemInfo,
+  Text,
+  View,
+  ViewToken,
+} from "react-native";
 import images from "../assets/data/images";
 import { placeProfileStyles } from "../assets/styles/place-profile.styles";
 
-const ImageCarousel = ({ navigation }) => {
-  const flatListRef = useRef(null);
+export default function ImageCarousel() {
+  const flatListRef = useRef<FlatList<ImageSourcePropType> | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Fallback if images is undefined or empty
-  if (!images || !Array.isArray(images) || images.length === 0) {
-    return (
-      <View style={placeProfileStyles.imageSection}>
-        <Text style={placeProfileStyles.errorText}>No images available</Text>
-      </View>
-    );
-  }
-
-  // Track visible image for dots
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index);
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems.length > 0 && viewableItems[0].index != null) {
+        setCurrentIndex(viewableItems[0].index);
+      }
     }
-  }).current;
+  ).current;
 
-  // Render each image item
-  const renderImageItem = ({ item }) => (
+  const renderImageItem = ({
+    item,
+  }: ListRenderItemInfo<ImageSourcePropType>) => (
     <View style={placeProfileStyles.imageItem}>
       <Image
         source={item}
@@ -34,7 +35,6 @@ const ImageCarousel = ({ navigation }) => {
     </View>
   );
 
-  // Render pagination dots
   const renderDots = () => (
     <View style={placeProfileStyles.dotsContainer}>
       {images.map((_, index) => (
@@ -51,6 +51,14 @@ const ImageCarousel = ({ navigation }) => {
     </View>
   );
 
+  if (!images || !Array.isArray(images) || images.length === 0) {
+    return (
+      <View style={placeProfileStyles.imageSection}>
+        <Text style={placeProfileStyles.errorText}>No images available</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={placeProfileStyles.imageSection}>
       <FlatList
@@ -60,15 +68,13 @@ const ImageCarousel = ({ navigation }) => {
         keyExtractor={(_, index) => `image-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
-        snapToInterval={310} // image width (300) + marginHorizontal (5 + 5)
+        snapToInterval={310}
         decelerationRate="fast"
-        scrollEnabled={true}
+        scrollEnabled
         onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={{
-          itemVisiblePercentThreshold: 50,
-        }}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         onScrollToIndexFailed={(info) => {
-          flatListRef.current.scrollToOffset({
+          flatListRef.current?.scrollToOffset({
             offset: info.index * 310,
             animated: true,
           });
@@ -77,6 +83,4 @@ const ImageCarousel = ({ navigation }) => {
       {renderDots()}
     </View>
   );
-};
-
-export default ImageCarousel;
+}
