@@ -5,7 +5,6 @@ import {
   FlatList,
   ImageBackground,
   ListRenderItemInfo,
-  StyleSheet,
   Text,
   View,
 } from "react-native";

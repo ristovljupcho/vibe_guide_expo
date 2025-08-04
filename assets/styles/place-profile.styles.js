@@ -1,6 +1,5 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
-const { height } = Dimensions.get("window");
 
 // MARGIN HORIZONTAL -> 4
 // MARGIN BOTTOM -> 5, 10, 15
