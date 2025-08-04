@@ -2,6 +2,8 @@ import { Dimensions, StyleSheet } from "react-native";
 import { COLORS } from "../../constants/colors";
 const { height } = Dimensions.get("window");
 
+// MARGIN HORIZONTAL -> 4
+// MARGIN BOTTOM -> 5, 10, 15
 export const placeProfileStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -14,6 +16,7 @@ export const placeProfileStyles = StyleSheet.create({
     marginVertical: 20,
     textAlign: "center",
     marginBottom: 25,
+    color: "#FAF6F9",
   },
   infoCard: {
     flex: 1,
@@ -116,5 +119,15 @@ export const placeProfileStyles = StyleSheet.create({
     color: "rgba(255, 255, 255, 0.7)",
     textAlign: "center",
     fontSize: 16,
+  },
+  carouselSection: {
+    marginTop: 10,
+  },
+  carouselTitle: {
+    color: "#FAF6F9",
+    textAlign: "left",
+    letterSpacing: 3,
+    marginHorizontal: 9,
+    marginBottom: 5,
   },
 });
