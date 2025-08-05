@@ -1,6 +1,8 @@
+import PlaceCardCarousel from "@/components/PlaceCarousel";
 import React, { useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { events } from "../../assets/data/events";
+import { places } from "../../assets/data/places";
 import { homeStyles } from "../../assets/styles/home.styles";
 import { textStyles } from "../../assets/styles/text.styles";
 import CardCarousel from "../../components/CardCarousel";
@@ -45,6 +47,13 @@ export default function HomeScreen() {
         <View style={homeStyles.quickSearchSection}>
           <QuickSearchCarousel />
         </View>
+        {/* Top Places Carousel */}
+        <View style={homeStyles.carouselSection}>
+          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
+            Top places
+          </Text>
+          <PlaceCardCarousel places={places} />
+        </View>
         {/* Events Carousel */}
         <View style={homeStyles.carouselSection}>
           <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
@@ -58,6 +67,13 @@ export default function HomeScreen() {
             Offers
           </Text>
           <CardCarousel cards={events} />
+        </View>
+        {/* Trending Places Carousel */}
+        <View style={homeStyles.carouselSection}>
+          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
+            Trending places
+          </Text>
+          <PlaceCardCarousel places={places} />
         </View>
       </ScrollView>
     </View>

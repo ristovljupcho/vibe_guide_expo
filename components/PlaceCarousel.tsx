@@ -1,15 +1,15 @@
-import { cardStyles } from "@/assets/styles/card.styles";
 import React, { useRef, useState } from "react";
 import { FlatList, ListRenderItemInfo, View, ViewToken } from "react-native";
+import { cardStyles } from "../assets/styles/card.styles";
 import { placeProfileStyles } from "../assets/styles/place-profile.styles";
-import Card, { CardProps } from "./Card";
+import PlaceCard, { PlaceCardProps } from "./PlaceCard"; // Your PlaceCard component path
 
-type CarouselProps = {
-  cards: CardProps[];
+type PlaceCardCarouselProps = {
+  places: PlaceCardProps[];
 };
 
-export default function CardCarousel({ cards }: CarouselProps) {
-  const flatListRef = useRef<FlatList<CardProps> | null>(null);
+export default function PlaceCardCarousel({ places }: PlaceCardCarouselProps) {
+  const flatListRef = useRef<FlatList<PlaceCardProps> | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const onViewableItemsChanged = useRef(
@@ -20,15 +20,15 @@ export default function CardCarousel({ cards }: CarouselProps) {
     }
   ).current;
 
-  const renderItem = ({ item }: ListRenderItemInfo<CardProps>) => (
+  const renderItem = ({ item }: ListRenderItemInfo<PlaceCardProps>) => (
     <View style={cardStyles.card}>
-      <Card {...item} />
+      <PlaceCard {...item} />
     </View>
   );
 
   const renderDots = () => (
     <View style={placeProfileStyles.dotsContainer}>
-      {cards.map((_, index) => (
+      {places.map((_, index) => (
         <View
           key={index}
           style={[
@@ -42,27 +42,26 @@ export default function CardCarousel({ cards }: CarouselProps) {
     </View>
   );
 
-  if (!cards || !Array.isArray(cards) || cards.length === 0) {
-    return <View style={placeProfileStyles.imageSection}></View>;
+  if (!places || !Array.isArray(places) || places.length === 0) {
+    return <View style={placeProfileStyles.imageSection} />;
   }
 
   return (
     <View style={placeProfileStyles.carouselSection}>
       <FlatList
         ref={flatListRef}
-        data={cards}
+        data={places}
         renderItem={renderItem}
-        keyExtractor={(_, index) => index.toString()}
+        keyExtractor={(_, index) => `placecard-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
-        snapToInterval={310}
+        snapToInterval={320} // Adjust width + margin to fit your PlaceCard width
         decelerationRate="fast"
-        scrollEnabled
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         onScrollToIndexFailed={(info) => {
           flatListRef.current?.scrollToOffset({
-            offset: info.index * 310,
+            offset: info.index * 320,
             animated: true,
           });
         }}

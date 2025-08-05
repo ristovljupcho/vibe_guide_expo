@@ -66,13 +66,13 @@ export default function Card({
       )}
 
       <View style={cardStyles.textContainer}>
-        <Text style={[textStyles.heading2Text, cardStyles.cardTitle]}>
+        <Text style={[textStyles.heading3Text, cardStyles.cardTitle]}>
           {isEvent ? eventName : placeName}
         </Text>
         {isEvent && (
-          <View style={cardStyles.eventLocation}>
+          <View style={cardStyles.location}>
             <Ionicons name="location-outline" size={18} color={"#FAF6F9"} />
-            <Text style={[textStyles.bodyText, cardStyles.text]}>
+            <Text style={[textStyles.informationsText, cardStyles.text]}>
               {placeName}
             </Text>
           </View>
@@ -82,7 +82,7 @@ export default function Card({
         </Text>
         <Text
           numberOfLines={1}
-          style={[textStyles.informationsText, cardStyles.descriptionText]}
+          style={[textStyles.captionsText, cardStyles.descriptionText]}
         >
           {description}
         </Text>
