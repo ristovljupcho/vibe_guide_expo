@@ -3,31 +3,51 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { placeCardStyles } from "../assets/styles/place-card.styles";
+import { cardStyles } from "../assets/styles/card.styles";
 import { textStyles } from "../assets/styles/text.styles";
 
+export type RootStackParamList = {
+  "(place-profile)": { placeId: string };
+};
+
+type PlaceCardNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "(place-profile)"
+>;
+
 export type PlaceCardProps = {
+  placeId: string;
   placeName: string;
-  location: string;
-  rating: number;
   description: string;
-  traits: string[];
-  image: any;
+  address: string;
+  rating: number;
+  primaryType: string;
+  topTraits: string[];
 };
 
 export default function PlaceCard({
+  placeId,
   placeName,
-  location,
-  rating,
   description,
-  traits,
-  image,
+  address,
+  rating,
+  primaryType,
+  topTraits = [],
 }: PlaceCardProps) {
+  const navigation = useNavigation<PlaceCardNavigationProp>();
+
+  const handleCardPress = () => {
+    navigation.navigate("(place-profile)", { placeId });
+  };
+
   return (
-    <View style={placeCardStyles.card}>
+    <TouchableOpacity style={placeCardStyles.card} onPress={handleCardPress}>
       <Image
-        source={image}
+        source={require("@/assets/data/casa-images/casa1.jpg")}
         style={[
           StyleSheet.absoluteFillObject,
           { width: undefined, height: undefined, alignSelf: "stretch" },
@@ -54,14 +74,16 @@ export default function PlaceCard({
             </Text>
           </View>
         </View>
+
         <View style={placeCardStyles.location}>
           <Ionicons name="location-outline" size={18} color={"#FAF6F9"} />
           <Text style={[textStyles.informationsText, placeCardStyles.text]}>
-            {location}
+            {primaryType}
           </Text>
         </View>
+
         <View style={placeCardStyles.traitsRow}>
-          {traits.map((trait, index) => (
+          {topTraits.map((trait, index) => (
             <Text
               key={index}
               style={[textStyles.informationsText, placeCardStyles.traitText]}
@@ -72,11 +94,11 @@ export default function PlaceCard({
         </View>
         <Text
           numberOfLines={1}
-          style={[textStyles.captionsText, placeCardStyles.descriptionText]}
+          style={[textStyles.captionsText, cardStyles.descriptionText]}
         >
           {description}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

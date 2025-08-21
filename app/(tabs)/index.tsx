@@ -1,8 +1,12 @@
 import PlaceCardCarousel from "@/components/PlaceCarousel";
-import React, { useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
-import { events } from "../../assets/data/events";
-import { places } from "../../assets/data/places";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { homeStyles } from "../../assets/styles/home.styles";
 import { textStyles } from "../../assets/styles/text.styles";
 import CardCarousel from "../../components/CardCarousel";
@@ -12,24 +16,60 @@ import { COLORS } from "../../constants/colors";
 export default function HomeScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [placesData, setPlacesData] = useState<any[]>([]);
+  const [eventsData, setEventsData] = useState<any[]>([]);
+
+  const baseUrl = "http://192.168.1.17:8080";
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      // Fetch both in parallel for speed
+      const [placesRes, eventsRes] = await Promise.all([
+        fetch(`${baseUrl}/places`),
+        fetch(`${baseUrl}/places`),
+      ]);
+
+      if (!placesRes.ok || !eventsRes.ok) {
+        throw new Error("Failed to fetch data from API");
+      }
+
+      const [placesJson, eventsJson] = await Promise.all([
+        placesRes.json(),
+        eventsRes.json(),
+      ]);
+
+      setPlacesData(placesJson || []);
+      setEventsData(eventsJson || []);
+    } catch (error) {
+      console.error("Error loading the data:", error);
+      // fallback: clear data so carousels don't break
+      setPlacesData([]);
+      setEventsData([]);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [baseUrl]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
-    setRefreshing(false);
   };
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      // Add actual data fetching logic here if needed
-      // Example: const fetchedEvents = await fetchEvents();
-    } catch (error) {
-      console.log("Error loading the data", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Show spinner while initial load is happening
+  if (loading && !refreshing) {
+    return (
+      <View style={[homeStyles.container, { justifyContent: "center" }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={homeStyles.container}>
@@ -44,36 +84,41 @@ export default function HomeScreen() {
         }
         contentContainerStyle={homeStyles.scrollContent}
       >
+        {/* Quick Search */}
         <View style={homeStyles.quickSearchSection}>
           <QuickSearchCarousel />
         </View>
+
         {/* Top Places Carousel */}
         <View style={homeStyles.carouselSection}>
           <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
             Top places
           </Text>
-          <PlaceCardCarousel places={places} />
+          <PlaceCardCarousel places={placesData} />
         </View>
+
         {/* Events Carousel */}
         <View style={homeStyles.carouselSection}>
           <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
             Events
           </Text>
-          <CardCarousel cards={events} />
+          <CardCarousel cards={eventsData} />
         </View>
+
         {/* Offers Carousel */}
         <View style={homeStyles.carouselSection}>
           <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
             Offers
           </Text>
-          <CardCarousel cards={events} />
+          <CardCarousel cards={eventsData} />
         </View>
+
         {/* Trending Places Carousel */}
         <View style={homeStyles.carouselSection}>
           <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
             Trending places
           </Text>
-          <PlaceCardCarousel places={places} />
+          <PlaceCardCarousel places={placesData} />
         </View>
       </ScrollView>
     </View>

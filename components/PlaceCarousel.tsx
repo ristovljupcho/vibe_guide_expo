@@ -55,13 +55,13 @@ export default function PlaceCardCarousel({ places }: PlaceCardCarouselProps) {
         keyExtractor={(_, index) => `placecard-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
-        snapToInterval={320} // Adjust width + margin to fit your PlaceCard width
+        snapToInterval={310}
         decelerationRate="fast"
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         onScrollToIndexFailed={(info) => {
           flatListRef.current?.scrollToOffset({
-            offset: info.index * 320,
+            offset: info.index * 310,
             animated: true,
           });
         }}
