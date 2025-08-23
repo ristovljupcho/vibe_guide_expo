@@ -12,6 +12,7 @@ import { textStyles } from "../../assets/styles/text.styles";
 import CardCarousel from "../../components/CardCarousel";
 import QuickSearchCarousel from "../../components/QuickSearchCarousel";
 import { COLORS } from "../../constants/colors";
+import { BASE_URL } from "@/scripts/config";
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -19,16 +20,14 @@ export default function HomeScreen() {
   const [placesData, setPlacesData] = useState<any[]>([]);
   const [eventsData, setEventsData] = useState<any[]>([]);
 
-  const baseUrl = "http://192.168.1.17:8080";
-
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
 
       // Fetch both in parallel for speed
       const [placesRes, eventsRes] = await Promise.all([
-        fetch(`${baseUrl}/places`),
-        fetch(`${baseUrl}/places`),
+        fetch(`${BASE_URL}/places`),
+        fetch(`${BASE_URL}/places`),
       ]);
 
       if (!placesRes.ok || !eventsRes.ok) {
@@ -51,7 +50,7 @@ export default function HomeScreen() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [baseUrl]);
+  }, []);
 
   useEffect(() => {
     loadData();
