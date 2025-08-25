@@ -1,6 +1,6 @@
 import { ImageSourcePropType } from "react-native";
 
-export type PlaceProps = {
+export type PlaceInfromationProps = {
   placeId: string;
   name: string;
   description: string;
@@ -11,15 +11,12 @@ export type PlaceProps = {
   menuLink: string;
   primaryType: string;
   priceLevel: string;
-  images: string[];
-  workingHours?: {
-    friSat: string;
-    sunThu: string;
-  };
 };
 
-export type CarouselTraitProps = {
-  traits: string[];
+export type PlaceImagesProps = {};
+
+export type TraitCarouselProps = {
+  name: string;
 };
 
 export type EventAndOfferCardProps = {
