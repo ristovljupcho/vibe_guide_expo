@@ -4,20 +4,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useRouter } from "expo-router";
 import { placeCardStyles } from "../assets/styles/place-card.styles";
 import { cardStyles } from "../assets/styles/card.styles";
 import { textStyles } from "../assets/styles/text.styles";
-
-export type RootStackParamList = {
-  "(place-profile)": { placeId: string };
-};
-
-type PlaceCardNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "(place-profile)"
->;
 
 export type PlaceCardProps = {
   placeId: string;
@@ -38,10 +28,13 @@ export default function PlaceCard({
   primaryType,
   topTraits = [],
 }: PlaceCardProps) {
-  const navigation = useNavigation<PlaceCardNavigationProp>();
+  const router = useRouter();
 
   const handleCardPress = () => {
-    navigation.navigate("(place-profile)", { placeId });
+    router.push({
+      pathname: "/(place-profile)/place-profile",
+      params: { placeId },
+    });
   };
 
   return (
