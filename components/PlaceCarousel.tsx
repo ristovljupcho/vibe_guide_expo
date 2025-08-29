@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { FlatList, ListRenderItemInfo, View, ViewToken } from "react-native";
 import { cardStyles } from "../assets/styles/card.styles";
 import { placeProfileStyles } from "../assets/styles/place-profile.styles";
-import PlaceCard, { PlaceCardProps } from "./PlaceCard"; // Your PlaceCard component path
+import PlaceCard, { PlaceCardProps } from "./PlaceCard";
 
 type PlaceCardCarouselProps = {
   places: PlaceCardProps[];

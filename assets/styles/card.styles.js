@@ -61,7 +61,6 @@ export const cardStyles = StyleSheet.create({
     color: "#FAF9F6",
   },
   descriptionText: {
-    marginTop: 2,
     color: "#FAF9F6",
   },
   text: {

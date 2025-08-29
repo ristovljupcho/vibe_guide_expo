@@ -32,8 +32,8 @@ function PlaceProfileScreen() {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [place, setPlace] = useState<PlaceInfromationProps>();
   const [traits, setTraits] = useState<TraitCarouselProps[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
-  const [offers, setOffers] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventAndOfferCardProps[]>([]);
+  const [offers, setOffers] = useState<EventAndOfferCardProps[]>([]);
 
   const loadData = useCallback(async () => {
     try {

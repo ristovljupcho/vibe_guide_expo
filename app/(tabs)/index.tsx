@@ -24,14 +24,15 @@ export default function HomeScreen() {
     try {
       setLoading(true);
 
-      // Fetch both in parallel for speed
       const [placesRes, eventsRes] = await Promise.all([
-        fetch(`${BASE_URL}/places`),
-        fetch(`${BASE_URL}/places`),
+        fetch(`${BASE_URL}/places/top`),
+        fetch(`${BASE_URL}/events/upcoming`),
       ]);
 
-      if (!placesRes.ok || !eventsRes.ok) {
-        throw new Error("Failed to fetch data from API");
+      if (!placesRes.ok) {
+        throw new Error("Failed to fetch places data from API");
+      } else if (!eventsRes.ok) {
+        throw new Error("Failed to fetch events data from API");
       }
 
       const [placesJson, eventsJson] = await Promise.all([

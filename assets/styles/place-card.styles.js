@@ -31,6 +31,9 @@ export const placeCardStyles = StyleSheet.create({
     fontStyle: "italic",
     color: "#FAF9F6",
   },
+  cardBodyText: {
+    color: "#FAF9F6",
+  },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -58,6 +61,7 @@ export const placeCardStyles = StyleSheet.create({
     alignContent: "space-between",
     flexWrap: "wrap",
     marginTop: 6,
+    marginBottom: 6,
     gap: 3,
   },
   traitText: {
