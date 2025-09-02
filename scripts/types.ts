@@ -19,11 +19,11 @@ export type TraitCarouselProps = {
   name: string;
 };
 
-export type EventAndOfferCardProps = {
-  eventName?: string;
+export type CardProps = {
+  name: string;
+  description: string;
   placeName: string;
   startDate: string;
   endDate: string;
-  description: string;
-  image: ImageSourcePropType;
+  image: ImageSourcePropType | null;
 };
