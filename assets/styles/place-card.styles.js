@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const cardStyles = StyleSheet.create({
+export const placeCardStyles = StyleSheet.create({
   carouselSection: {
     marginHorizontal: 4,
     marginVertical: 5,
@@ -19,25 +19,6 @@ export const cardStyles = StyleSheet.create({
     elevation: 5,
     position: "relative",
   },
-  badge: {
-    position: "absolute",
-    top: 12,
-    left: 12,
-    backgroundColor: "#bbf7d0",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 999,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    zIndex: 10,
-  },
-  badgeText: {
-    color: "#166534",
-    fontSize: 12,
-    fontWeight: "600",
-  },
   textContainer: {
     position: "absolute",
     bottom: 12,
@@ -50,6 +31,14 @@ export const cardStyles = StyleSheet.create({
     fontStyle: "italic",
     color: "#FAF9F6",
   },
+  cardBodyText: {
+    color: "#FAF9F6",
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
   location: {
     flex: 1,
     flexDirection: "row",
@@ -57,10 +46,33 @@ export const cardStyles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 5,
   },
-  timeText: {
+  rating: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  ratingText: {
+    marginLeft: 4,
+    color: "#FAF6F9",
+  },
+  traitsRow: {
+    flexDirection: "row",
+    alignContent: "space-between",
+    flexWrap: "wrap",
+    marginTop: 6,
+    marginBottom: 6,
+    gap: 3,
+  },
+  traitText: {
     color: "#FAF9F6",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   descriptionText: {
+    marginTop: 4,
     color: "#FAF9F6",
   },
   text: {

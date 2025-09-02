@@ -1,18 +1,19 @@
 import React, { useEffect, useRef } from "react";
 import { FlatList, ListRenderItemInfo, Text, View } from "react-native";
+import { TraitCarouselProps } from "@/scripts/types";
 import { placeProfileStyles } from "../assets/styles/place-profile.styles";
 import { textStyles } from "../assets/styles/text.styles";
 
-type TraitCarouselProps = {
-  traits: string[];
-};
-
-export default function TraitCarousel({ traits }: TraitCarouselProps) {
-  const flatListRef = useRef<FlatList<string> | null>(null);
+export default function TraitCarousel({
+  traits,
+}: {
+  traits: TraitCarouselProps[];
+}) {
+  const flatListRef = useRef<FlatList<TraitCarouselProps> | null>(null);
   const scrollOffsetRef = useRef(0);
 
   // Duplicate traits for infinite scrolling
-  const extendedTraits: string[] = Array(10).fill(traits).flat();
+  const extendedTraits: TraitCarouselProps[] = Array(10).fill(traits).flat();
 
   // Smooth continuous scrolling
   useEffect(() => {
@@ -48,10 +49,12 @@ export default function TraitCarousel({ traits }: TraitCarouselProps) {
   }, [traits.length]);
 
   // Render each trait item
-  const renderTraitItem = ({ item }: ListRenderItemInfo<string>) => (
+  const renderTraitItem = ({
+    item,
+  }: ListRenderItemInfo<TraitCarouselProps>) => (
     <View style={placeProfileStyles.traitItem}>
       <Text style={[textStyles.bodyText, placeProfileStyles.traitText]}>
-        {item}
+        {item.name}
       </Text>
     </View>
   );
@@ -62,7 +65,7 @@ export default function TraitCarousel({ traits }: TraitCarouselProps) {
         ref={flatListRef}
         data={extendedTraits}
         renderItem={renderTraitItem}
-        keyExtractor={(item, index) => `${item}-${index}`}
+        keyExtractor={(item, index) => `${item.name}-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={placeProfileStyles.traitsContainer}

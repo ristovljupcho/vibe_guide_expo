@@ -1,39 +1,89 @@
-import { events } from "@/assets/data/events";
-import { offers } from "@/assets/data/offers";
-import ImageCarousel from "@/components/ImageCarousel";
-import TraitCarousel from "@/components/TraitCarousel";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState } from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
-import { traits } from "../../assets/data/traits.json";
+import ImageCarousel from "@/components/ImageCarousel";
+import TraitCarousel from "@/components/TraitCarousel";
+import CardCarousel from "@/components/CardCarousel";
+import {
+  PlaceInfromationProps,
+  TraitCarouselProps,
+  EventAndOfferCardProps,
+} from "@/scripts/types";
 import { homeStyles } from "../../assets/styles/home.styles";
 import { placeProfileStyles } from "../../assets/styles/place-profile.styles";
 import { textStyles } from "../../assets/styles/text.styles";
-import CardCarousel from "../../components/CardCarousel";
 import { COLORS } from "../../constants/colors";
+import { BASE_URL } from "@/scripts/config";
+import { useLocalSearchParams } from "expo-router";
 
 function PlaceProfileScreen() {
+  // Assign the placeId passed down
+  const params = useLocalSearchParams();
+  const placeId = params.placeId as string;
+
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [place, setPlace] = useState<PlaceInfromationProps>();
+  const [traits, setTraits] = useState<TraitCarouselProps[]>([]);
+  const [events, setEvents] = useState<EventAndOfferCardProps[]>([]);
+  const [offers, setOffers] = useState<EventAndOfferCardProps[]>([]);
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const [placeRes, traitsRes, eventsRes, offersRes] = await Promise.all([
+        fetch(`${BASE_URL}/places/${placeId}`),
+        fetch(`${BASE_URL}/places/${placeId}/traits/carousel`),
+        fetch(`${BASE_URL}/events`),
+        fetch(`${BASE_URL}/offers`),
+      ]);
+
+      if (!placeRes.ok || !traitsRes.ok || eventsRes.ok || offersRes.ok) {
+        throw new Error("Failed to fetch data from API");
+      }
+
+      const [placeJson, traitsJson, eventsJson, offersJson] = await Promise.all(
+        [placeRes.json(), traitsRes.json(), eventsRes.json(), offersRes.json()]
+      );
+
+      setPlace(placeJson || []);
+      setTraits(traitsJson || []);
+      setEvents(eventsJson || []);
+      setOffers(offersJson || []);
+      console.log(place?.address);
+    } catch (error) {
+      console.error("Error loading the data:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await loadData();
-    setRefreshing(false);
   };
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      // Add actual data fetching logic here if needed
-      // Example: const fetchedEvents = await fetchEvents();
-    } catch (error) {
-      console.log("Error loading the data", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Show spinner while initial load is happening
+  if (loading && !refreshing) {
+    return (
+      <View style={[homeStyles.container, { justifyContent: "center" }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={homeStyles.container}>
@@ -51,7 +101,7 @@ function PlaceProfileScreen() {
         <Text
           style={[textStyles.headingItalicText, placeProfileStyles.heading]}
         >
-          Casa Bar
+          {place?.name}
         </Text>
 
         {/* Images Section (Carousel) */}
@@ -71,7 +121,7 @@ function PlaceProfileScreen() {
                   placeProfileStyles.infoText,
                 ]}
               >
-                4.3
+                {place?.rating}
               </Text>
             </View>
             <View style={[placeProfileStyles.infoRow, { marginTop: 10 }]}>
@@ -82,7 +132,7 @@ function PlaceProfileScreen() {
                   placeProfileStyles.infoText,
                 ]}
               >
-                st. Tiranska 1b
+                {place?.address}
               </Text>
             </View>
           </View>
@@ -101,7 +151,7 @@ function PlaceProfileScreen() {
                 style={[
                   textStyles.informationsText,
                   placeProfileStyles.infoText,
-                  { marginTop: 10 }, // Fixed syntax error
+                  { marginTop: 10 },
                 ]}
               >
                 Sun - Thu : 08:00 to 00:00
@@ -115,12 +165,7 @@ function PlaceProfileScreen() {
           <Text
             style={[placeProfileStyles.descriptionText, textStyles.bodyText]}
           >
-            From exquisite coffee in the early mornings to heavenly cold pints
-            full of draft beer and refreshing cocktails by the bar in the late
-            summer evenings, we do it all. It is up to you to decide whether you
-            want to enjoy your caffeinated beverage while doing some work, or
-            whether you want to mingle through the crowd and dance the night
-            away.
+            {place?.description}
           </Text>
         </View>
 
