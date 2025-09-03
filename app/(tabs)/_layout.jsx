@@ -17,10 +17,9 @@ function TabsLayout() {
         tabBarActiveTintColor: COLORS.textLight,
         tabBarInactiveTintColor: COLORS.textDimmed,
         tabBarStyle: {
-          backgroundColor: COLORS.overlay1,
           borderTopWidth: 0,
-          paddingTop: 5,
-          height: 80,
+          backgroundColor: COLORS.overlay1,
+          height: 70,
         },
         tabBarLabelStyle: {
           fontSize: 12,
