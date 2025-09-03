@@ -1,6 +1,7 @@
+import { PlaceCardProps } from "@/components/PlaceCard";
 import PlaceCardCarousel from "@/components/PlaceCarousel";
 import { BASE_URL } from "@/scripts/config";
-import { EventAndOfferCardProps } from "@/scripts/types";
+import { CardProps } from "@/scripts/types";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,19 +15,14 @@ import { textStyles } from "../../assets/styles/text.styles";
 import CardCarousel from "../../components/CardCarousel";
 import QuickSearchCarousel from "../../components/QuickSearchCarousel";
 import { COLORS } from "../../constants/colors";
-import { PlaceCardProps } from "@/components/PlaceCard";
 
 export default function HomeScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [placesData, setPlacesData] = useState<PlaceCardProps[]>([]);
-  const [eventsData, setEventsData] = useState<EventAndOfferCardProps[]>([]);
-  const [dailyOffersData, setDailyOffersData] = useState<
-    EventAndOfferCardProps[]
-  >([]);
-  const [upcomingOffersData, setUpcomingOffersData] = useState<
-    EventAndOfferCardProps[]
-  >([]);
+  const [eventsData, setEventsData] = useState<CardProps[]>([]);
+  const [dailyOffersData, setDailyOffersData] = useState<CardProps[]>([]);
+  const [upcomingOffersData, setUpcomingOffersData] = useState<CardProps[]>([]);
 
   const loadData = useCallback(async () => {
     try {
@@ -36,7 +32,7 @@ export default function HomeScreen() {
         await Promise.all([
           fetch(`${BASE_URL}/places/top`),
           fetch(`${BASE_URL}/events/upcoming`),
-          fetch(`${BASE_URL}/offers/daily`),
+          fetch(`${BASE_URL}/offers/active`),
           fetch(`${BASE_URL}/offers/upcoming`),
         ]);
 

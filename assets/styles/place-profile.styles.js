@@ -21,7 +21,6 @@ export const placeProfileStyles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     marginHorizontal: 4,
-    marginVertical: 20,
     backgroundColor: "rgba(255, 255, 255, 0.08)",
     padding: 10,
     borderRadius: 10,
@@ -34,6 +33,9 @@ export const placeProfileStyles = StyleSheet.create({
   infoRow: {
     flex: 1,
     flexDirection: "row",
+    marginTop: 5,
+    marginBottom: 5,
+    backgroundColor: "lightblue",
   },
   workingHoursSection: {
     flex: 1,
@@ -42,7 +44,6 @@ export const placeProfileStyles = StyleSheet.create({
   infoText: {
     color: "#FAF6F9",
     textAlign: "left",
-    marginLeft: 5,
   },
   traitsSection: {
     marginHorizontal: 4,
@@ -74,7 +75,7 @@ export const placeProfileStyles = StyleSheet.create({
     paddingVertical: 10,
   },
   descriptionText: {
-    color: "rgba(255, 255, 255, 0.25)",
+    color: "rgba(255, 255, 255, 0.4)",
     lineHeight: 27,
     textAlign: "justify",
   },
@@ -128,5 +129,15 @@ export const placeProfileStyles = StyleSheet.create({
     letterSpacing: 3,
     marginHorizontal: 9,
     marginBottom: 5,
+  },
+  //Empty state
+  emptyStateContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyStateText: {
+    opacity: 0.7,
+    textAlign: "center",
   },
 });

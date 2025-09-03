@@ -34,4 +34,10 @@ export const textStyles = StyleSheet.create({
     fontFamily: "Lato_900Black_Italic",
     fontSize: 32,
   },
+  primaryColor: {
+    color: "#FAF6F9",
+  },
+  secondaryColor: {
+    color: "rgba(255, 255, 255, 0.4)",
+  },
 });

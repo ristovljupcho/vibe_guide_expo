@@ -1,6 +1,5 @@
 import { GRADIENT_COLORS } from "@/constants/gradient-colors";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
