@@ -1,19 +1,18 @@
+import VerticalPlaceCardCarousel from "@/components/PlaceVerticalCarousel";
 import { COLORS } from "@/constants/colors";
-import { CANT_LOAD_SCREEN } from "@/constants/error-messages";
 import { BASE_URL } from "@/scripts/config";
 import { PlaceCardProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Animated,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { textStyles } from "../../assets/styles/text.styles";
-import VerticalPlaceCardCarousel from "@/components/PlaceVerticalCarousel";
 
 export default function PlacesScreen() {
   const [loading, setLoading] = useState(true);
@@ -21,6 +20,10 @@ export default function PlacesScreen() {
   const [placesData, setPlacesData] = useState<PlaceCardProps[]>([]);
   const [error, setError] = useState(false);
   const [isHeaderTextVisible, setIsHeaderTextVisible] = useState(true); // Track header text visibility
+
+  // Animation setup
+  const backgroundAnimation = useRef(new Animated.Value(0)).current;
+  const textOpacityAnimation = useRef(new Animated.Value(0)).current;
 
   const loadData = useCallback(async () => {
     try {
@@ -46,6 +49,28 @@ export default function PlacesScreen() {
     loadData();
   }, [loadData]);
 
+  // Animate background color and text opacity when isHeaderTextVisible changes
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(backgroundAnimation, {
+        toValue: isHeaderTextVisible ? 0 : 1, // 0 for overlay1, 1 for overlay3
+        duration: 500, // Animation duration in ms
+        useNativeDriver: false, // Color animations require non-native driver
+      }),
+      Animated.timing(textOpacityAnimation, {
+        toValue: isHeaderTextVisible ? 0 : 1, // 0 for hidden, 1 for visible
+        duration: 500, // Match background animation duration
+        useNativeDriver: true, // Opacity animations can use native driver
+      }),
+    ]).start();
+  }, [isHeaderTextVisible, backgroundAnimation, textOpacityAnimation]);
+
+  // Interpolate background color between COLORS.overlay1 and COLORS.overlay3
+  const animatedBackgroundColor = backgroundAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [COLORS.overlay1, COLORS.overlay3],
+  });
+
   // Callback to handle header visibility changes
   const handleHeaderVisibilityChange = useCallback((isVisible: boolean) => {
     setIsHeaderTextVisible(isVisible);
@@ -59,40 +84,27 @@ export default function PlacesScreen() {
     );
   }
 
-  if (error) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={{ color: "white" }}>{CANT_LOAD_SCREEN}</Text>
-      </View>
-    );
-  }
-
-  if (!placesData || placesData.length === 0) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={{ color: "white" }}>No places found</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       {/* Sticky Header */}
-      <View style={styles.header}>
+      <Animated.View
+        style={[styles.header, { backgroundColor: animatedBackgroundColor }]}
+      >
         <View style={styles.headerSection}>
           {!isHeaderTextVisible && (
-            <Text
+            <Animated.Text
               style={[
                 textStyles.heading3Text,
                 {
                   color: COLORS.textPrimary,
                   textAlign: "left",
                   letterSpacing: 3,
+                  opacity: textOpacityAnimation, // Apply animated opacity
                 },
               ]}
             >
               All places
-            </Text>
+            </Animated.Text>
           )}
         </View>
         <View style={styles.headerSection} />
@@ -104,7 +116,7 @@ export default function PlacesScreen() {
             <Ionicons name="map-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Scrollable Content */}
       <View style={styles.body}>
@@ -127,7 +139,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    backgroundColor: COLORS.overlay1,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
