@@ -32,7 +32,7 @@ export default function HomeScreen() {
         await Promise.all([
           fetch(`${BASE_URL}/places/top`),
           fetch(`${BASE_URL}/events/upcoming`),
-          fetch(`${BASE_URL}/offers/daily`),
+          fetch(`${BASE_URL}/offers/active`),
           fetch(`${BASE_URL}/offers/upcoming`),
         ]);
 

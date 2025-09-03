@@ -1,7 +1,6 @@
 import { ImageSourcePropType } from "react-native";
 
-export type PlaceInfromationProps = {
-  placeId: string;
+export type PlaceProps = {
   name: string;
   description: string;
   mapsUri: string;
