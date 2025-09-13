@@ -1,159 +1,75 @@
-import { PlaceCardProps } from "@/components/PlaceCard";
-import PlaceCardCarousel from "@/components/PlaceCarousel";
-import { BASE_URL } from "@/scripts/config";
-import { CardProps } from "@/scripts/types";
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
-import { homeStyles } from "../../assets/styles/home.styles";
-import { textStyles } from "../../assets/styles/text.styles";
-import CardCarousel from "../../components/CardCarousel";
-import QuickSearchCarousel from "../../components/QuickSearchCarousel";
-import { COLORS } from "../../constants/colors";
+import { Image } from 'expo-image';
+import { Platform, StyleSheet } from 'react-native';
+
+import { HelloWave } from '@/components/HelloWave';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [placesData, setPlacesData] = useState<PlaceCardProps[]>([]);
-  const [eventsData, setEventsData] = useState<CardProps[]>([]);
-  const [dailyOffersData, setDailyOffersData] = useState<CardProps[]>([]);
-  const [upcomingOffersData, setUpcomingOffersData] = useState<CardProps[]>([]);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      const [placesRes, eventsRes, dailyOffersRes, upcomingOffersRes] =
-        await Promise.all([
-          fetch(`${BASE_URL}/places/top`),
-          fetch(`${BASE_URL}/events/upcoming`),
-          fetch(`${BASE_URL}/offers/active`),
-          fetch(`${BASE_URL}/offers/upcoming`),
-        ]);
-
-      if (!placesRes.ok) {
-        console.error("Failed to fetch places data");
-        setPlacesData([]);
-      }
-      if (!eventsRes.ok) {
-        console.error("Failed to fetch events data");
-        setEventsData([]);
-      }
-      if (!dailyOffersRes.ok) {
-        console.error("Failed to fetch daily offers data");
-        setEventsData([]);
-      }
-      if (!upcomingOffersRes.ok) {
-        console.error("Failed to fetch upcoming offers data");
-        setEventsData([]);
-      }
-
-      const [placesJson, eventsJson, dailyOffersJson, upcomingOffersJson] =
-        await Promise.all([
-          placesRes.ok ? placesRes.json() : [],
-          eventsRes.ok ? eventsRes.json() : [],
-          dailyOffersRes.ok ? dailyOffersRes.json() : [],
-          upcomingOffersRes.ok ? upcomingOffersRes.json() : [],
-        ]);
-
-      setPlacesData(placesJson);
-      setEventsData(eventsJson);
-      setDailyOffersData(dailyOffersJson);
-      setUpcomingOffersData(upcomingOffersJson);
-    } catch (error) {
-      console.error("Error loading the data:", error);
-      // fallback: clear data so carousels don't break
-      setPlacesData([]);
-      setEventsData([]);
-      setDailyOffersData([]);
-      setUpcomingOffersData([]);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadData();
-  };
-
-  // Show spinner while initial load is happening
-  if (loading && !refreshing) {
-    return (
-      <View style={[homeStyles.container, { justifyContent: "center" }]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-      </View>
-    );
-  }
-
   return (
-    <View style={homeStyles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={COLORS.primary}
-          />
-        }
-        contentContainerStyle={homeStyles.scrollContent}
-      >
-        {/* Quick Search */}
-        <View style={homeStyles.quickSearchSection}>
-          <QuickSearchCarousel />
-        </View>
-
-        {/* Top Places Carousel */}
-        <View style={homeStyles.carouselSection}>
-          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
-            Top places
-          </Text>
-          <PlaceCardCarousel places={placesData} />
-        </View>
-
-        {/* Events Carousel */}
-        <View style={homeStyles.carouselSection}>
-          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
-            Events
-          </Text>
-          <CardCarousel cards={eventsData} />
-        </View>
-
-        {/*Upcoming Offers Carousel */}
-        <View style={homeStyles.carouselSection}>
-          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
-            Upcoming Offers
-          </Text>
-          <CardCarousel cards={upcomingOffersData} />
-        </View>
-
-        {/*Daily Offers Carousel */}
-        <View style={homeStyles.carouselSection}>
-          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
-            Daily Offers
-          </Text>
-          <CardCarousel cards={dailyOffersData} />
-        </View>
-
-        {/* Trending Places Carousel */}
-        <View style={homeStyles.carouselSection}>
-          <Text style={[homeStyles.carouselTitle, textStyles.heading2Text]}>
-            Trending places
-          </Text>
-          <PlaceCardCarousel places={placesData} />
-        </View>
-      </ScrollView>
-    </View>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerImage={
+        <Image
+          source={require('@/assets/images/partial-react-logo.png')}
+          style={styles.reactLogo}
+        />
+      }>
+      <ThemedView style={styles.titleContainer}>
+        <ThemedText type="title">Welcome!</ThemedText>
+        <HelloWave />
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
+        <ThemedText>
+          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
+          Press{' '}
+          <ThemedText type="defaultSemiBold">
+            {Platform.select({
+              ios: 'cmd + d',
+              android: 'cmd + m',
+              web: 'F12',
+            })}
+          </ThemedText>{' '}
+          to open developer tools.
+        </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
+        <ThemedText>
+          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+        </ThemedText>
+      </ThemedView>
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText>
+          {`When you're ready, run `}
+          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
+          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
+          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
+          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
+        </ThemedText>
+      </ThemedView>
+    </ParallaxScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  stepContainer: {
+    gap: 8,
+    marginBottom: 8,
+  },
+  reactLogo: {
+    height: 178,
+    width: 290,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+  },
+});
