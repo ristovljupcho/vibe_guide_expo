@@ -1,8 +1,8 @@
+import { COLORS } from "@/constants/colors";
 import { useAuth } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, Tabs } from "expo-router";
 import React from "react";
-import { COLORS } from "../../constants/colors";
 
 function TabsLayout() {
   // Authentication
@@ -14,14 +14,12 @@ function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textLight,
+        tabBarActiveTintColor: COLORS.textLight,
+        tabBarInactiveTintColor: COLORS.textDimmed,
         tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 1,
-          paddingBottom: 8,
-          paddingTop: 8,
+          backgroundColor: COLORS.overlay1,
+          borderTopWidth: 0,
+          paddingTop: 5,
           height: 80,
         },
         tabBarLabelStyle: {
