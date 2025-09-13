@@ -18,6 +18,16 @@ export type TraitCarouselProps = {
   name: string;
 };
 
+export type PlaceCardProps = {
+  id: string;
+  name: string;
+  description: string;
+  rating: number;
+  primaryType: string;
+  priceLevel: string;
+  topTraits: string[];
+};
+
 export type CardProps = {
   name: string;
   description: string;

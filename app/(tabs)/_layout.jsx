@@ -14,15 +14,12 @@ function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textLight,
+        tabBarActiveTintColor: COLORS.textLight,
+        tabBarInactiveTintColor: COLORS.textDimmed,
         tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopColor: COLORS.border,
-          borderTopWidth: 1,
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 80,
+          borderTopWidth: 0,
+          backgroundColor: COLORS.overlay1,
+          height: 70,
         },
         tabBarLabelStyle: {
           fontSize: 12,
