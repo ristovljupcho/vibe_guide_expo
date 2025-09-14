@@ -1,7 +1,6 @@
-import { PlaceCardProps } from "@/components/PlaceCard";
 import PlaceCardCarousel from "@/components/PlaceCarousel";
 import { BASE_URL } from "@/scripts/config";
-import { CardProps } from "@/scripts/types";
+import { CardProps, PlaceCardProps } from "@/scripts/types";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,

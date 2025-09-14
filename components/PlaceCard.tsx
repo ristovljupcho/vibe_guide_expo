@@ -1,4 +1,5 @@
 import { GRADIENT_COLORS } from "@/constants/gradient-colors";
+import { PlaceCardProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -7,16 +8,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { cardStyles } from "../assets/styles/card.styles";
 import { placeCardStyles } from "../assets/styles/place-card.styles";
 import { textStyles } from "../assets/styles/text.styles";
-
-export type PlaceCardProps = {
-  id: string;
-  name: string;
-  description: string;
-  rating: number;
-  primaryType: string;
-  priceLevel: string;
-  topTraits: string[];
-};
 
 export default function PlaceCard({
   id,

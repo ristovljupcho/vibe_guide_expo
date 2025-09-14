@@ -12,6 +12,25 @@ export type PlaceProps = {
   priceLevel: string;
 };
 
+export type PlaceCardProps = {
+  id: string;
+  name: string;
+  description: string;
+  rating: number;
+  primaryType: string;
+  priceLevel: string;
+  topTraits: string[];
+};
+
+export type PlaceInformationProps = {
+  rating: number;
+  type: string;
+  priceLevel: string;
+  address: string;
+  workingHours: { days: string; hours: string }[];
+  description: string;
+};
+
 export type PlaceImagesProps = {};
 
 export type TraitCarouselProps = {
