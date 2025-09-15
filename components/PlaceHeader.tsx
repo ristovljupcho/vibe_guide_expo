@@ -1,5 +1,6 @@
 import { textStyles } from "@/assets/styles/text.styles";
 import { COLORS } from "@/constants/colors";
+import { ORDER, PLACE_SORT } from "@/constants/sort";
 import { TraitCarouselProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
@@ -18,7 +19,7 @@ import {
 } from "react-native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const POPUP_HEIGHT = SCREEN_HEIGHT * 0.6;
+const POPUP_HEIGHT = SCREEN_HEIGHT * 0.7;
 
 type PlaceHeaderProps = {
   onSmilePress?: () => void;
@@ -26,7 +27,8 @@ type PlaceHeaderProps = {
   onApplyFilters?: (
     selectedTraits: TraitCarouselProps[],
     selectedPriceLevel: string,
-    selectedSort: string
+    selectedSort: string,
+    selectedOrder: string
   ) => void;
 };
 
@@ -41,6 +43,7 @@ export default function PlaceHeader({
   );
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<string>("");
   const [selectedSort, setSelectedSort] = useState<string>("");
+  const [selectedOrder, setSelectedOrder] = useState<string>("");
 
   const slideAnim = useRef(new Animated.Value(POPUP_HEIGHT)).current;
   const pan = useRef(new Animated.Value(0)).current;
@@ -104,12 +107,14 @@ export default function PlaceHeader({
     EXPENSIVE: "$$$",
   };
 
-  // Sort options
-  const SORT_OPTIONS = ["Rating", "Name"];
-
   const applyFilters = () => {
     if (onApplyFilters)
-      onApplyFilters(selectedTraits, selectedPriceLevel, selectedSort);
+      onApplyFilters(
+        selectedTraits,
+        selectedPriceLevel,
+        selectedSort,
+        selectedOrder
+      );
     closePopup();
   };
 
@@ -117,6 +122,7 @@ export default function PlaceHeader({
     setSelectedTraits([]);
     setSelectedPriceLevel("");
     setSelectedSort("");
+    setSelectedOrder("");
   };
 
   return (
@@ -209,7 +215,7 @@ export default function PlaceHeader({
                       style={[
                         styles.itemText,
                         textStyles.bodyText,
-                        isSelected && styles.priceTextSelected,
+                        isSelected && styles.selectedItemText,
                       ]}
                     >
                       {symbol}
@@ -224,7 +230,7 @@ export default function PlaceHeader({
           <View style={styles.popupSection}>
             <Text style={[styles.popupText, textStyles.bodyText]}>Sort by</Text>
             <View style={styles.priceWrapper}>
-              {SORT_OPTIONS.map((option) => {
+              {PLACE_SORT.map((option) => {
                 const isSelected = selectedSort === option;
                 return (
                   <Pressable
@@ -236,7 +242,34 @@ export default function PlaceHeader({
                       style={[
                         styles.itemText,
                         textStyles.bodyText,
-                        isSelected && styles.priceTextSelected,
+                        isSelected && styles.selectedItemText,
+                      ]}
+                    >
+                      {option}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Order selector */}
+          <View style={styles.popupSection}>
+            <Text style={[styles.popupText, textStyles.bodyText]}>Order</Text>
+            <View style={styles.priceWrapper}>
+              {ORDER.map((option) => {
+                const isSelected = selectedOrder === option;
+                return (
+                  <Pressable
+                    key={option}
+                    onPress={() => setSelectedOrder(option)}
+                    style={[styles.item, isSelected && styles.selectedItemText]}
+                  >
+                    <Text
+                      style={[
+                        styles.itemText,
+                        textStyles.bodyText,
+                        isSelected && styles.selectedItemText,
                       ]}
                     >
                       {option}
@@ -250,12 +283,16 @@ export default function PlaceHeader({
           {/* Reset Filters Row */}
           <View style={styles.resetRow}>
             <Pressable onPress={resetFilters}>
-              <Text style={styles.resetText}>Reset Filters</Text>
+              <Text style={[textStyles.informationsText, styles.resetText]}>
+                Reset Filters
+              </Text>
             </Pressable>
           </View>
 
           <Pressable style={styles.applyButton} onPress={applyFilters}>
-            <Text style={styles.applyButtonText}>Apply Filters</Text>
+            <Text style={[textStyles.bodyText, styles.applyButtonText]}>
+              Apply Filters
+            </Text>
           </Pressable>
         </Animated.View>
       </Modal>
@@ -355,9 +392,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: "center",
   },
-  priceTextSelected: {
-    color: COLORS.white,
-  },
   resetRow: {
     marginTop: 12,
     alignItems: "flex-end",
@@ -365,8 +399,6 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: COLORS.primary,
-    fontSize: 14,
-    fontWeight: "600",
     textDecorationLine: "underline",
   },
   applyButton: {
@@ -379,6 +411,5 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: COLORS.white,
     fontWeight: "bold",
-    fontSize: 16,
   },
 });
