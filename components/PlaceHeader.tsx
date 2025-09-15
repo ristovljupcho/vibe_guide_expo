@@ -1,15 +1,16 @@
 import { textStyles } from "@/assets/styles/text.styles";
 import { COLORS } from "@/constants/colors";
 import { TraitCarouselProps } from "@/scripts/types";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
-  FlatList,
   Modal,
   PanResponder,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -17,12 +18,16 @@ import {
 } from "react-native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const POPUP_HEIGHT = SCREEN_HEIGHT * 0.7;
+const POPUP_HEIGHT = SCREEN_HEIGHT * 0.6;
 
 type PlaceHeaderProps = {
   onSmilePress?: () => void;
   traits?: TraitCarouselProps[];
-  onApplyFilters?: (selectedTraits: TraitCarouselProps[]) => void;
+  onApplyFilters?: (
+    selectedTraits: TraitCarouselProps[],
+    selectedPriceLevel: string,
+    selectedSort: string
+  ) => void;
 };
 
 export default function PlaceHeader({
@@ -34,8 +39,9 @@ export default function PlaceHeader({
   const [selectedTraits, setSelectedTraits] = useState<TraitCarouselProps[]>(
     []
   );
+  const [selectedPriceLevel, setSelectedPriceLevel] = useState<string>("");
+  const [selectedSort, setSelectedSort] = useState<string>("");
 
-  // Slide animation
   const slideAnim = useRef(new Animated.Value(POPUP_HEIGHT)).current;
   const pan = useRef(new Animated.Value(0)).current;
   const translateY = Animated.add(slideAnim, pan);
@@ -91,29 +97,26 @@ export default function PlaceHeader({
     }
   };
 
+  // Price level map for display symbols
+  const priceDisplayMap: Record<string, string> = {
+    INEXPENSIVE: "$",
+    MODERATE: "$$",
+    EXPENSIVE: "$$$",
+  };
+
+  // Sort options
+  const SORT_OPTIONS = ["Rating", "Name"];
+
   const applyFilters = () => {
-    if (onApplyFilters) onApplyFilters(selectedTraits);
+    if (onApplyFilters)
+      onApplyFilters(selectedTraits, selectedPriceLevel, selectedSort);
     closePopup();
   };
 
-  const renderTrait = ({ item }: { item: TraitCarouselProps }) => {
-    const isSelected = selectedTraits.some((t) => t.name === item.name);
-    return (
-      <Pressable
-        onPress={() => toggleTrait(item)}
-        style={[styles.traitItem, isSelected && styles.traitSelected]}
-      >
-        <Text
-          style={[
-            styles.traitText,
-            textStyles.bodyText,
-            isSelected && styles.traitTextSelected,
-          ]}
-        >
-          {item.name}
-        </Text>
-      </Pressable>
-    );
+  const resetFilters = () => {
+    setSelectedTraits([]);
+    setSelectedPriceLevel("");
+    setSelectedSort("");
   };
 
   return (
@@ -121,7 +124,6 @@ export default function PlaceHeader({
       {/* Header */}
       <View style={styles.container}>
         <Text style={[textStyles.heading2Text, styles.title]}>Places</Text>
-
         <Pressable onPress={togglePopup} style={styles.iconContainer}>
           <Feather
             name="filter"
@@ -146,21 +148,111 @@ export default function PlaceHeader({
             { height: POPUP_HEIGHT, transform: [{ translateY }] },
           ]}
         >
-          <Text style={[textStyles.heading2Text, styles.popupTitle]}>
-            Filter Options
-          </Text>
+          <View style={styles.popupHeader}>
+            <Text style={[textStyles.heading2Text, styles.popupTitle]}>
+              Filter Options
+            </Text>
+            <Pressable onPress={() => closePopup()}>
+              <AntDesign name="close" size={24} color={COLORS.white} />
+            </Pressable>
+          </View>
 
-          <FlatList
-            data={traits}
-            keyExtractor={(item) => item.name}
-            renderItem={renderTrait}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingVertical: 10,
-              alignItems: "flex-start",
-            }}
-          />
+          {/* Traits */}
+          <View style={styles.popupSection}>
+            <Text style={[styles.popupText, textStyles.bodyText]}>Traits</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.traitsWrapper}
+              style={{ flexGrow: 0 }}
+            >
+              {traits.map((trait) => {
+                const isSelected = selectedTraits.some(
+                  (t) => t.name === trait.name
+                );
+                return (
+                  <Pressable
+                    key={trait.name}
+                    onPress={() => toggleTrait(trait)}
+                    style={[styles.item, isSelected && styles.traitSelected]}
+                  >
+                    <Text
+                      style={[
+                        styles.itemText,
+                        textStyles.bodyText,
+                        isSelected && styles.traitTextSelected,
+                      ]}
+                    >
+                      {trait.name}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* Price level selector */}
+          <View style={styles.popupSection}>
+            <Text style={[styles.popupText, textStyles.bodyText]}>
+              Price level
+            </Text>
+            <View style={styles.priceWrapper}>
+              {Object.entries(priceDisplayMap).map(([key, symbol]) => {
+                const isSelected = selectedPriceLevel === key;
+                return (
+                  <Pressable
+                    key={key}
+                    onPress={() => setSelectedPriceLevel(key)}
+                    style={[styles.item, isSelected && styles.selectedItemText]}
+                  >
+                    <Text
+                      style={[
+                        styles.itemText,
+                        textStyles.bodyText,
+                        isSelected && styles.priceTextSelected,
+                      ]}
+                    >
+                      {symbol}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Sort selector */}
+          <View style={styles.popupSection}>
+            <Text style={[styles.popupText, textStyles.bodyText]}>Sort by</Text>
+            <View style={styles.priceWrapper}>
+              {SORT_OPTIONS.map((option) => {
+                const isSelected = selectedSort === option;
+                return (
+                  <Pressable
+                    key={option}
+                    onPress={() => setSelectedSort(option)}
+                    style={[styles.item, isSelected && styles.selectedItemText]}
+                  >
+                    <Text
+                      style={[
+                        styles.itemText,
+                        textStyles.bodyText,
+                        isSelected && styles.priceTextSelected,
+                      ]}
+                    >
+                      {option}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* Reset Filters Row */}
+          <View style={styles.resetRow}>
+            <Pressable onPress={resetFilters}>
+              <Text style={styles.resetText}>Reset Filters</Text>
+            </Pressable>
+          </View>
 
           <Pressable style={styles.applyButton} onPress={applyFilters}>
             <Text style={styles.applyButtonText}>Apply Filters</Text>
@@ -203,27 +295,79 @@ const styles = StyleSheet.create({
     padding: 20,
     marginHorizontal: 5,
   },
+  popupSection: {
+    borderBottomColor: COLORS.overlay1,
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
+  popupHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: COLORS.overlay1,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
   popupTitle: {
     color: COLORS.textPrimary,
-    marginBottom: 12,
+    letterSpacing: 2,
   },
-  traitItem: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    marginRight: 8,
-    borderRadius: 3,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    alignSelf: "flex-start", // make the item wrap content
+  popupText: {
+    color: COLORS.textPrimary,
+    letterSpacing: 2,
+  },
+  item: {
+    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 8,
+  },
+  itemText: {
+    color: COLORS.white,
+    textAlign: "center",
+  },
+  selectedItemText: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  traitsWrapper: {
+    flexDirection: "row",
+    gap: 8,
+    paddingVertical: 8,
+    alignItems: "center",
   },
   traitSelected: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
-  traitText: {
-    color: COLORS.white,
-  },
   traitTextSelected: {
     color: COLORS.white,
+  },
+  priceWrapper: {
+    flexDirection: "row",
+    gap: 8,
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+  priceTextSelected: {
+    color: COLORS.white,
+  },
+  resetRow: {
+    marginTop: 12,
+    alignItems: "flex-end",
+    paddingHorizontal: 4,
+  },
+  resetText: {
+    color: COLORS.primary,
+    fontSize: 14,
+    fontWeight: "600",
+    textDecorationLine: "underline",
   },
   applyButton: {
     marginTop: 20,
