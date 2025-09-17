@@ -5,6 +5,7 @@ import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { cardStyles } from "../assets/styles/card.styles";
 import { textStyles } from "../assets/styles/text.styles";
+import { COLORS } from "../constants/colors";
 
 export default function Card({
   name,
@@ -34,7 +35,7 @@ export default function Card({
         />
       ) : (
         <LinearGradient
-          colors={["#FFD700", "#FF69B4"]} // yellow → pink
+          colors={["#FFD700", COLORS.primary]}
           style={StyleSheet.absoluteFillObject}
         />
       )}
