@@ -77,5 +77,17 @@ export const THEMES = {
   orange: orangeTheme,
 };
 
+export const TRANSPARENCY = {
+  10: "1A", // 10% opacity
+  20: "33", // 20% opacity
+  30: "4D", // 30% opacity
+  40: "66", // 40% opacity
+  50: "80", // 50% opacity
+  60: "99", // 60% opacity
+  70: "B3", // 70% opacity
+  80: "CC", // 80% opacity
+  90: "E6", // 90% opacity
+};
+
 // 👇 change this to switch theme
 export const COLORS = THEMES.orange;

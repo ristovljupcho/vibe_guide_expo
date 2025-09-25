@@ -9,7 +9,6 @@ import {
   Animated,
   Dimensions,
   Modal,
-  PanResponder,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -46,48 +45,24 @@ export default function PlaceHeader({
   const [selectedOrder, setSelectedOrder] = useState<string>("");
 
   const slideAnim = useRef(new Animated.Value(POPUP_HEIGHT)).current;
-  const pan = useRef(new Animated.Value(0)).current;
-  const translateY = Animated.add(slideAnim, pan);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) =>
-        Math.abs(gestureState.dy) > 5,
-      onPanResponderMove: (_, gestureState) => {
-        if (gestureState.dy > 0) pan.setValue(gestureState.dy);
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dy > POPUP_HEIGHT / 3) closePopup();
-        else
-          Animated.spring(pan, { toValue: 0, useNativeDriver: true }).start();
-      },
-    })
-  ).current;
-
-  const openPopup = () => {
-    setIsOpen(true);
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const closePopup = () => {
-    Animated.timing(slideAnim, {
-      toValue: POPUP_HEIGHT,
-      duration: 250,
-      useNativeDriver: true,
-    }).start(() => {
-      setIsOpen(false);
-      pan.setValue(0);
-    });
-  };
 
   const togglePopup = () => {
-    if (isOpen) closePopup();
-    else openPopup();
-
+    if (isOpen) {
+      // Slide down
+      Animated.timing(slideAnim, {
+        toValue: POPUP_HEIGHT,
+        duration: 250,
+        useNativeDriver: true,
+      }).start(() => setIsOpen(false));
+    } else {
+      setIsOpen(true);
+      // Slide up
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
     if (onSmilePress) onSmilePress();
   };
 
@@ -100,7 +75,6 @@ export default function PlaceHeader({
     }
   };
 
-  // Price level map for display symbols
   const priceDisplayMap: Record<string, string> = {
     INEXPENSIVE: "$",
     MODERATE: "$$",
@@ -115,7 +89,7 @@ export default function PlaceHeader({
         selectedSort,
         selectedOrder
       );
-    closePopup();
+    togglePopup();
   };
 
   const resetFilters = () => {
@@ -141,159 +115,179 @@ export default function PlaceHeader({
 
       {/* Modal */}
       <Modal transparent visible={isOpen} animationType="fade">
-        {/* Dimmed background */}
-        <TouchableWithoutFeedback onPress={closePopup}>
+        <TouchableWithoutFeedback onPress={togglePopup}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
 
-        {/* Draggable bottom sheet */}
         <Animated.View
-          {...panResponder.panHandlers}
           style={[
             styles.popup,
-            { height: POPUP_HEIGHT, transform: [{ translateY }] },
+            { height: POPUP_HEIGHT, transform: [{ translateY: slideAnim }] },
           ]}
         >
-          <View style={styles.popupHeader}>
-            <Text style={[textStyles.heading2Text, styles.popupTitle]}>
-              Filter Options
-            </Text>
-            <Pressable onPress={() => closePopup()}>
-              <AntDesign name="close" size={24} color={COLORS.white} />
-            </Pressable>
-          </View>
-
-          {/* Traits */}
-          <View style={styles.popupSection}>
-            <Text style={[styles.popupText, textStyles.bodyText]}>Traits</Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.traitsWrapper}
-              style={{ flexGrow: 0 }}
-            >
-              {traits.map((trait) => {
-                const isSelected = selectedTraits.some(
-                  (t) => t.name === trait.name
-                );
-                return (
-                  <Pressable
-                    key={trait.name}
-                    onPress={() => toggleTrait(trait)}
-                    style={[styles.item, isSelected && styles.traitSelected]}
-                  >
-                    <Text
-                      style={[
-                        styles.itemText,
-                        textStyles.bodyText,
-                        isSelected && styles.traitTextSelected,
-                      ]}
-                    >
-                      {trait.name}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </View>
-
-          {/* Price level selector */}
-          <View style={styles.popupSection}>
-            <Text style={[styles.popupText, textStyles.bodyText]}>
-              Price level
-            </Text>
-            <View style={styles.priceWrapper}>
-              {Object.entries(priceDisplayMap).map(([key, symbol]) => {
-                const isSelected = selectedPriceLevel === key;
-                return (
-                  <Pressable
-                    key={key}
-                    onPress={() => setSelectedPriceLevel(key)}
-                    style={[styles.item, isSelected && styles.selectedItemText]}
-                  >
-                    <Text
-                      style={[
-                        styles.itemText,
-                        textStyles.bodyText,
-                        isSelected && styles.selectedItemText,
-                      ]}
-                    >
-                      {symbol}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header */}
+            <View style={styles.popupHeader}>
+              <Text style={[textStyles.heading2Text, styles.popupTitle]}>
+                Filter Options
+              </Text>
+              <Pressable onPress={togglePopup}>
+                <AntDesign name="close" size={24} color={COLORS.white} />
+              </Pressable>
             </View>
-          </View>
 
-          {/* Sort selector */}
-          <View style={styles.popupSection}>
-            <Text style={[styles.popupText, textStyles.bodyText]}>Sort by</Text>
-            <View style={styles.priceWrapper}>
-              {PLACE_SORT.map((option) => {
-                const isSelected = selectedSort === option;
-                return (
-                  <Pressable
-                    key={option}
-                    onPress={() => setSelectedSort(option)}
-                    style={[styles.item, isSelected && styles.selectedItemText]}
-                  >
-                    <Text
+            {/* Traits */}
+            <View style={styles.popupSection}>
+              <Text style={[styles.popupText, textStyles.bodyText]}>
+                Traits
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.traitsWrapper}
+              >
+                {traits.map((trait, idx) => {
+                  const isSelected = selectedTraits.some(
+                    (t) => t.name === trait.name
+                  );
+                  return (
+                    <Pressable
+                      key={trait.name}
+                      onPress={() => toggleTrait(trait)}
                       style={[
-                        styles.itemText,
-                        textStyles.bodyText,
-                        isSelected && styles.selectedItemText,
+                        styles.item,
+                        isSelected && styles.traitSelected,
+                        idx !== traits.length - 1 && { marginRight: 8 },
                       ]}
                     >
-                      {option}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+                      <Text
+                        style={[
+                          styles.itemText,
+                          isSelected && styles.traitTextSelected,
+                        ]}
+                      >
+                        {trait.name}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
             </View>
-          </View>
 
-          {/* Order selector */}
-          <View style={styles.popupSection}>
-            <Text style={[styles.popupText, textStyles.bodyText]}>Order</Text>
-            <View style={styles.priceWrapper}>
-              {ORDER.map((option) => {
-                const isSelected = selectedOrder === option;
-                return (
-                  <Pressable
-                    key={option}
-                    onPress={() => setSelectedOrder(option)}
-                    style={[styles.item, isSelected && styles.selectedItemText]}
-                  >
-                    <Text
+            {/* Price */}
+            <View style={styles.popupSection}>
+              <Text style={[styles.popupText, textStyles.bodyText]}>
+                Price level
+              </Text>
+              <View style={styles.priceWrapper}>
+                {Object.entries(priceDisplayMap).map(([key, symbol], idx) => {
+                  const isSelected = selectedPriceLevel === key;
+                  return (
+                    <Pressable
+                      key={key}
+                      onPress={() => setSelectedPriceLevel(key)}
                       style={[
-                        styles.itemText,
-                        textStyles.bodyText,
+                        styles.item,
                         isSelected && styles.selectedItemText,
+                        idx !== Object.entries(priceDisplayMap).length - 1 && {
+                          marginRight: 8,
+                        },
                       ]}
                     >
-                      {option}
-                    </Text>
-                  </Pressable>
-                );
-              })}
+                      <Text
+                        style={[
+                          styles.itemText,
+                          isSelected && styles.selectedItemText,
+                        ]}
+                      >
+                        {symbol}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
             </View>
-          </View>
 
-          {/* Reset Filters Row */}
-          <View style={styles.resetRow}>
-            <Pressable onPress={resetFilters}>
-              <Text style={[textStyles.informationsText, styles.resetText]}>
-                Reset Filters
+            {/* Sort */}
+            <View style={styles.popupSection}>
+              <Text style={[styles.popupText, textStyles.bodyText]}>
+                Sort by
+              </Text>
+              <View style={styles.priceWrapper}>
+                {PLACE_SORT.map((option, idx) => {
+                  const isSelected = selectedSort === option;
+                  return (
+                    <Pressable
+                      key={option}
+                      onPress={() => setSelectedSort(option)}
+                      style={[
+                        styles.item,
+                        isSelected && styles.selectedItemText,
+                        idx !== PLACE_SORT.length - 1 && { marginRight: 8 },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.itemText,
+                          isSelected && styles.selectedItemText,
+                        ]}
+                      >
+                        {option}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Order */}
+            <View style={styles.popupSection}>
+              <Text style={[styles.popupText, textStyles.bodyText]}>Order</Text>
+              <View style={styles.priceWrapper}>
+                {ORDER.map((option, idx) => {
+                  const isSelected = selectedOrder === option;
+                  return (
+                    <Pressable
+                      key={option}
+                      onPress={() => setSelectedOrder(option)}
+                      style={[
+                        styles.item,
+                        isSelected && styles.selectedItemText,
+                        idx !== ORDER.length - 1 && { marginRight: 8 },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.itemText,
+                          isSelected && styles.selectedItemText,
+                        ]}
+                      >
+                        {option}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Reset + Apply */}
+            <View style={styles.resetRow}>
+              <Pressable onPress={resetFilters}>
+                <Text style={[textStyles.informationsText, styles.resetText]}>
+                  Reset Filters
+                </Text>
+              </Pressable>
+            </View>
+
+            <Pressable style={styles.applyButton} onPress={applyFilters}>
+              <Text style={[textStyles.bodyText, styles.applyButtonText]}>
+                Apply Filters
               </Text>
             </Pressable>
-          </View>
-
-          <Pressable style={styles.applyButton} onPress={applyFilters}>
-            <Text style={[textStyles.bodyText, styles.applyButtonText]}>
-              Apply Filters
-            </Text>
-          </Pressable>
+          </ScrollView>
         </Animated.View>
       </Modal>
     </>
@@ -359,7 +353,6 @@ const styles = StyleSheet.create({
   item: {
     borderColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderStyle: "solid",
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 6,
