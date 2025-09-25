@@ -90,4 +90,4 @@ export const TRANSPARENCY = {
 };
 
 // 👇 change this to switch theme
-export const COLORS = THEMES.orange;
+export const COLORS = THEMES.pink;

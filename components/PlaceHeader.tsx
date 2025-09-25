@@ -1,12 +1,11 @@
 import { textStyles } from "@/assets/styles/text.styles";
-import { COLORS } from "@/constants/colors";
+import { COLORS, TRANSPARENCY } from "@/constants/colors";
 import { ORDER, PLACE_SORT } from "@/constants/sort";
 import { TraitCarouselProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
-  Animated,
   Dimensions,
   Modal,
   Pressable,
@@ -18,7 +17,7 @@ import {
 } from "react-native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const POPUP_HEIGHT = SCREEN_HEIGHT * 0.7;
+const POPUP_HEIGHT = SCREEN_HEIGHT * 0.75;
 
 type PlaceHeaderProps = {
   onSmilePress?: () => void;
@@ -44,25 +43,8 @@ export default function PlaceHeader({
   const [selectedSort, setSelectedSort] = useState<string>("");
   const [selectedOrder, setSelectedOrder] = useState<string>("");
 
-  const slideAnim = useRef(new Animated.Value(POPUP_HEIGHT)).current;
-
   const togglePopup = () => {
-    if (isOpen) {
-      // Slide down
-      Animated.timing(slideAnim, {
-        toValue: POPUP_HEIGHT,
-        duration: 250,
-        useNativeDriver: true,
-      }).start(() => setIsOpen(false));
-    } else {
-      setIsOpen(true);
-      // Slide up
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
+    setIsOpen(!isOpen);
     if (onSmilePress) onSmilePress();
   };
 
@@ -99,9 +81,25 @@ export default function PlaceHeader({
     setSelectedOrder("");
   };
 
+  const renderItem = (
+    label: string,
+    selected: boolean,
+    onPress: () => void,
+    key: string
+  ) => (
+    <Pressable
+      key={key}
+      style={[styles.item, selected && styles.selectedItem]}
+      onPress={onPress}
+    >
+      <Text style={[styles.itemText, selected && styles.selectedText]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+
   return (
     <>
-      {/* Header */}
       <View style={styles.container}>
         <Text style={[textStyles.heading2Text, styles.title]}>Places</Text>
         <Pressable onPress={togglePopup} style={styles.iconContainer}>
@@ -113,167 +111,154 @@ export default function PlaceHeader({
         </Pressable>
       </View>
 
-      {/* Modal */}
       <Modal transparent visible={isOpen} animationType="fade">
         <TouchableWithoutFeedback onPress={togglePopup}>
           <View style={styles.overlay} />
         </TouchableWithoutFeedback>
 
-        <Animated.View
-          style={[
-            styles.popup,
-            { height: POPUP_HEIGHT, transform: [{ translateY: slideAnim }] },
-          ]}
-        >
+        <View style={[styles.popup, { height: POPUP_HEIGHT }]}>
+          <View style={styles.popupHeader}>
+            <Text style={[textStyles.heading2Text, styles.popupTitle]}>
+              Filter Options
+            </Text>
+            <Pressable onPress={togglePopup}>
+              <AntDesign name="close" size={24} color={COLORS.white} />
+            </Pressable>
+          </View>
           <ScrollView
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
           >
-            {/* Header */}
-            <View style={styles.popupHeader}>
-              <Text style={[textStyles.heading2Text, styles.popupTitle]}>
-                Filter Options
-              </Text>
-              <Pressable onPress={togglePopup}>
-                <AntDesign name="close" size={24} color={COLORS.white} />
-              </Pressable>
-            </View>
-
             {/* Traits */}
             <View style={styles.popupSection}>
-              <Text style={[styles.popupText, textStyles.bodyText]}>
-                Traits
-              </Text>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.popupText, textStyles.bodyText]}>
+                  Traits
+                </Text>
+                {selectedTraits.length > 0 && (
+                  <Pressable onPress={() => setSelectedTraits([])}>
+                    <AntDesign
+                      name="closecircle"
+                      size={18}
+                      color={COLORS.primary}
+                    />
+                  </Pressable>
+                )}
+              </View>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.traitsWrapper}
+                contentContainerStyle={styles.horizontalWrapper}
               >
-                {traits.map((trait, idx) => {
-                  const isSelected = selectedTraits.some(
-                    (t) => t.name === trait.name
-                  );
-                  return (
-                    <Pressable
-                      key={trait.name}
-                      onPress={() => toggleTrait(trait)}
-                      style={[
-                        styles.item,
-                        isSelected && styles.traitSelected,
-                        idx !== traits.length - 1 && { marginRight: 8 },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.itemText,
-                          isSelected && styles.traitTextSelected,
-                        ]}
-                      >
-                        {trait.name}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+                {traits.map((trait) =>
+                  renderItem(
+                    trait.name,
+                    selectedTraits.some((t) => t.name === trait.name),
+                    () => toggleTrait(trait),
+                    trait.name
+                  )
+                )}
               </ScrollView>
             </View>
 
-            {/* Price */}
+            {/* Price level */}
             <View style={styles.popupSection}>
-              <Text style={[styles.popupText, textStyles.bodyText]}>
-                Price level
-              </Text>
-              <View style={styles.priceWrapper}>
-                {Object.entries(priceDisplayMap).map(([key, symbol], idx) => {
-                  const isSelected = selectedPriceLevel === key;
-                  return (
-                    <Pressable
-                      key={key}
-                      onPress={() => setSelectedPriceLevel(key)}
-                      style={[
-                        styles.item,
-                        isSelected && styles.selectedItemText,
-                        idx !== Object.entries(priceDisplayMap).length - 1 && {
-                          marginRight: 8,
-                        },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.itemText,
-                          isSelected && styles.selectedItemText,
-                        ]}
-                      >
-                        {symbol}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.popupText, textStyles.bodyText]}>
+                  Price level
+                </Text>
+                {selectedPriceLevel && (
+                  <Pressable onPress={() => setSelectedPriceLevel("")}>
+                    <AntDesign
+                      name="closecircle"
+                      size={18}
+                      color={COLORS.primary}
+                    />
+                  </Pressable>
+                )}
               </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalWrapper}
+              >
+                {Object.entries(priceDisplayMap).map(([key, symbol]) =>
+                  renderItem(
+                    symbol,
+                    selectedPriceLevel === key,
+                    () => setSelectedPriceLevel(key),
+                    key
+                  )
+                )}
+              </ScrollView>
             </View>
 
             {/* Sort */}
             <View style={styles.popupSection}>
-              <Text style={[styles.popupText, textStyles.bodyText]}>
-                Sort by
-              </Text>
-              <View style={styles.priceWrapper}>
-                {PLACE_SORT.map((option, idx) => {
-                  const isSelected = selectedSort === option;
-                  return (
-                    <Pressable
-                      key={option}
-                      onPress={() => setSelectedSort(option)}
-                      style={[
-                        styles.item,
-                        isSelected && styles.selectedItemText,
-                        idx !== PLACE_SORT.length - 1 && { marginRight: 8 },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.itemText,
-                          isSelected && styles.selectedItemText,
-                        ]}
-                      >
-                        {option}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.popupText, textStyles.bodyText]}>
+                  Sort by
+                </Text>
+                {selectedSort && (
+                  <Pressable onPress={() => setSelectedSort("")}>
+                    <AntDesign
+                      name="closecircle"
+                      size={18}
+                      color={COLORS.primary}
+                    />
+                  </Pressable>
+                )}
               </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalWrapper}
+              >
+                {PLACE_SORT.map((option) =>
+                  renderItem(
+                    option,
+                    selectedSort === option,
+                    () => setSelectedSort(option),
+                    option
+                  )
+                )}
+              </ScrollView>
             </View>
 
             {/* Order */}
             <View style={styles.popupSection}>
-              <Text style={[styles.popupText, textStyles.bodyText]}>Order</Text>
-              <View style={styles.priceWrapper}>
-                {ORDER.map((option, idx) => {
-                  const isSelected = selectedOrder === option;
-                  return (
-                    <Pressable
-                      key={option}
-                      onPress={() => setSelectedOrder(option)}
-                      style={[
-                        styles.item,
-                        isSelected && styles.selectedItemText,
-                        idx !== ORDER.length - 1 && { marginRight: 8 },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.itemText,
-                          isSelected && styles.selectedItemText,
-                        ]}
-                      >
-                        {option}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.popupText, textStyles.bodyText]}>
+                  Order
+                </Text>
+                {selectedOrder && (
+                  <Pressable onPress={() => setSelectedOrder("")}>
+                    <AntDesign
+                      name="closecircle"
+                      size={18}
+                      color={COLORS.primary}
+                    />
+                  </Pressable>
+                )}
               </View>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalWrapper}
+              >
+                {ORDER.map((option) =>
+                  renderItem(
+                    option,
+                    selectedOrder === option,
+                    () => setSelectedOrder(option),
+                    option
+                  )
+                )}
+              </ScrollView>
             </View>
-
-            {/* Reset + Apply */}
+          </ScrollView>
+          {/* Reset + Apply */}
+          <View style={styles.popupFooter}>
             <View style={styles.resetRow}>
               <Pressable onPress={resetFilters}>
                 <Text style={[textStyles.informationsText, styles.resetText]}>
@@ -287,8 +272,8 @@ export default function PlaceHeader({
                 Apply Filters
               </Text>
             </Pressable>
-          </ScrollView>
-        </Animated.View>
+          </View>
+        </View>
       </Modal>
     </>
   );
@@ -341,6 +326,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.overlay1,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: `${COLORS.primary}${TRANSPARENCY[50]}`,
   },
   popupTitle: {
     color: COLORS.textPrimary,
@@ -349,6 +336,13 @@ const styles = StyleSheet.create({
   popupText: {
     color: COLORS.textPrimary,
     letterSpacing: 2,
+    marginBottom: 4,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
   },
   item: {
     borderColor: "rgba(255, 255, 255, 0.1)",
@@ -357,27 +351,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginBottom: 8,
+    backgroundColor: "transparent",
   },
   itemText: {
     color: COLORS.white,
     textAlign: "center",
   },
-  selectedItemText: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+  selectedItem: {
+    backgroundColor: `${COLORS.primary}${TRANSPARENCY[20]}`,
+    borderColor: `${COLORS.primary}${TRANSPARENCY[50]}`,
   },
-  traitsWrapper: {
+  selectedText: {
+    color: COLORS.white,
+  },
+  horizontalWrapper: {
     flexDirection: "row",
     gap: 8,
     paddingVertical: 8,
     alignItems: "center",
-  },
-  traitSelected: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  traitTextSelected: {
-    color: COLORS.white,
   },
   priceWrapper: {
     flexDirection: "row",
@@ -391,7 +382,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   resetText: {
-    color: COLORS.primary,
+    color: `${COLORS.primary}${TRANSPARENCY[90]}`,
     textDecorationLine: "underline",
   },
   applyButton: {
@@ -404,5 +395,14 @@ const styles = StyleSheet.create({
   applyButtonText: {
     color: COLORS.white,
     fontWeight: "bold",
+  },
+  popupFooter: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+    backgroundColor: COLORS.overlay1,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+    borderTopWidth: 1,
+    borderTopColor: `${COLORS.primary}${TRANSPARENCY[50]}`,
   },
 });
