@@ -1,3 +1,5 @@
+import { textStyles } from "@/assets/styles/text.styles";
+import { COLORS } from "@/constants/colors";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -8,21 +10,22 @@ type EmptyStateProps = {
 export default function EmptyState({ label }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.message}>There are no {label} at the moment! :(</Text>
+      <Text style={[styles.message, textStyles.bodyText]}>{label}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.background,
+    paddingVertical: 20,
   },
   message: {
-    fontSize: 16,
-    color: "#FAF6F9",
+    color: COLORS.textPrimary,
     opacity: 0.7,
     textAlign: "center",
+    letterSpacing: 1,
   },
 });

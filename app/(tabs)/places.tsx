@@ -1,11 +1,13 @@
 import { homeStyles } from "@/assets/styles/home.styles";
+import { textStyles } from "@/assets/styles/text.styles";
 import PlaceHeader from "@/components/PlaceHeader";
 import PlaceVerticalCarousel from "@/components/PlaceVerticalCarousel";
+import EmptyState from "@/components/states/EmptyState";
+import LoadingState from "@/components/states/LoadingState";
 import { BASE_URL } from "@/scripts/config";
 import { PlaceCardProps, TraitCarouselProps } from "@/scripts/types";
 import React, { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, RefreshControl, View } from "react-native";
-import { placeProfileStyles } from "../../assets/styles/place-profile.styles";
+import { Pressable, RefreshControl, Text, View } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 export default function PlacesScreen() {
@@ -71,9 +73,43 @@ export default function PlacesScreen() {
   };
 
   if (loading && !refreshing) {
+    return <LoadingState />;
+  }
+
+  if (!placesData || placesData.length === 0) {
     return (
-      <View style={[placeProfileStyles.carouselSection, { flex: 1 }]}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+      <View
+        style={{
+          backgroundColor: COLORS.background,
+          flex: 1,
+          justifyContent: "center",
+        }}
+      >
+        <EmptyState label={"No places found with that filter!"} />
+        <View style={{ alignItems: "center", marginTop: 8 }}>
+          <Pressable
+            onPress={() => loadData()} // call default loadData without filters
+            style={{
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              backgroundColor: COLORS.primary,
+              borderRadius: 12,
+            }}
+          >
+            <Text
+              style={[
+                textStyles.bodyText,
+                {
+                  color: "white",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                },
+              ]}
+            >
+              See all
+            </Text>
+          </Pressable>
+        </View>
       </View>
     );
   }

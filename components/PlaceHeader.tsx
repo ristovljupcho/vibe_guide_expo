@@ -92,7 +92,13 @@ export default function PlaceHeader({
       style={[styles.item, selected && styles.selectedItem]}
       onPress={onPress}
     >
-      <Text style={[styles.itemText, selected && styles.selectedText]}>
+      <Text
+        style={[
+          styles.itemText,
+          textStyles.informationsText,
+          selected && styles.selectedText,
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
@@ -382,7 +388,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   resetText: {
-    color: `${COLORS.primary}${TRANSPARENCY[90]}`,
+    color: `${COLORS.primary}${TRANSPARENCY[50]}`,
     textDecorationLine: "underline",
   },
   applyButton: {
