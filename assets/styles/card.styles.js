@@ -19,6 +19,18 @@ export const cardStyles = StyleSheet.create({
     elevation: 5,
     position: "relative",
   },
+  verticalCard: {
+    width: 300,
+    height: 200,
+    borderRadius: 10,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    position: "relative",
+  },
   badge: {
     position: "absolute",
     top: 12,

@@ -67,8 +67,6 @@ const orangeTheme = {
   textSecondary: "#FF723F",
   textLight: "#FF9A8F",
   textDimmed: "rgba(255, 255, 255, 0.3)",
-  shadow: "#000000",
-};
 
 export const THEMES = {
   mint: mintTheme,
@@ -87,6 +85,7 @@ export const TRANSPARENCY = {
   70: "B3", // 70% opacity
   80: "CC", // 80% opacity
   90: "E6", // 90% opacity
+
 };
 
 // 👇 change this to switch theme
