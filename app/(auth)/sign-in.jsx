@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { authStyles } from "../../assets/styles/auth.styles";
+import { textStyles } from "../../assets/styles/text.styles";
 import { COLORS } from "../../constants/colors";
 
 function SignInScreen() {
@@ -79,14 +80,16 @@ function SignInScreen() {
             />
           </View>
 
-          <Text style={authStyles.title}>Welcome Back</Text>
+          <Text style={[textStyles.heading1Text, authStyles.title]}>
+            Welcome Back
+          </Text>
 
           {/* FORM CONTAINER */}
           <View style={authStyles.formContainer}>
             {/* Email Input */}
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={authStyles.textInput}
+                style={[textStyles.bodyText, authStyles.textInput]}
                 placeholder="Enter email"
                 placeholderTextColor={COLORS.textLight}
                 value={emailAddress}
@@ -99,7 +102,7 @@ function SignInScreen() {
             {/* PASSWORD INPUT */}
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={authStyles.textInput}
+                style={[textStyles.bodyText, authStyles.textInput]}
                 placeholder="Enter password"
                 placeholderTextColor={COLORS.textLight}
                 value={password}
@@ -128,7 +131,7 @@ function SignInScreen() {
               disabled={loading}
               activeOpacity={0.8}
             >
-              <Text style={authStyles.buttonText}>
+              <Text style={[textStyles.bodyText, authStyles.buttonText]}>
                 {loading ? "Signing In..." : "Sign In"}
               </Text>
             </TouchableOpacity>
@@ -138,9 +141,11 @@ function SignInScreen() {
               style={authStyles.linkContainer}
               onPress={() => router.push("/(auth)/sign-up")}
             >
-              <Text style={authStyles.linkText}>
+              <Text style={[textStyles.bodyText, authStyles.linkText]}>
                 Don&apos;t have an account?{" "}
-                <Text style={authStyles.link}>Sign up</Text>
+                <Text style={[textStyles.bodyText, authStyles.link]}>
+                  Sign up
+                </Text>
               </Text>
             </TouchableOpacity>
           </View>

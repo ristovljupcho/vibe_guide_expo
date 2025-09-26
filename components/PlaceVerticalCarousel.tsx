@@ -1,77 +1,78 @@
-import { COLORS } from "@/constants/colors";
+import PlaceCard from "@/components/PlaceCard";
 import { PlaceCardProps } from "@/scripts/types";
 import React, { useRef } from "react";
-import { FlatList, ListRenderItemInfo, Text, View } from "react-native";
-import { cardStyles } from "../assets/styles/card.styles";
-import { textStyles } from "../assets/styles/text.styles";
-import PlaceCard from "./PlaceCard";
+import {
+  FlatList,
+  ListRenderItemInfo,
+  RefreshControlProps,
+  StyleSheet,
+  View,
+} from "react-native";
+import { placeProfileStyles } from "../assets/styles/place-profile.styles";
 
-type VerticalPlaceCardCarouselProps = {
+type PlaceVerticalCarouselProps = {
   places: PlaceCardProps[];
-  onHeaderVisibilityChange?: (isVisible: boolean) => void; // Callback to notify parent
+  refreshControl?: React.ReactElement<RefreshControlProps>;
 };
 
-export default function VerticalPlaceCardCarousel({
+export default function PlaceVerticalCarousel({
   places,
-  onHeaderVisibilityChange,
-}: VerticalPlaceCardCarouselProps) {
+  refreshControl,
+}: PlaceVerticalCarouselProps) {
   const flatListRef = useRef<FlatList<PlaceCardProps> | null>(null);
 
   const renderItem = ({ item }: ListRenderItemInfo<PlaceCardProps>) => (
-    <View style={{ alignItems: "center", marginVertical: 8 }}>
-      <View style={cardStyles.verticalCard}>
+    <View style={styles.cardContainer}>
+      <View style={styles.card}>
         <PlaceCard {...item} />
       </View>
     </View>
   );
 
-  // Define the header component
-  const renderHeader = () => (
-    <View
-      style={{
-        paddingVertical: 10,
-        alignItems: "flex-start",
-        paddingHorizontal: 16,
-      }}
-    >
-      <Text
-        style={[
-          textStyles.heading2Text,
-          { color: COLORS.textPrimary, textAlign: "left", letterSpacing: 3 },
-        ]}
-      >
-        All places
-      </Text>
-    </View>
-  );
-
-  // Handle scroll to detect when header is out of view
-  const handleScroll = (event: any) => {
-    const scrollY = event.nativeEvent.contentOffset.y;
-    // Assuming the header height is roughly 40 (paddingVertical: 10 + text height)
-    // Adjust this threshold based on actual header height if needed
-    const headerHeight = 40;
-    const isHeaderVisible = scrollY < headerHeight;
-    onHeaderVisibilityChange?.(isHeaderVisible);
-  };
-
-  if (!places || !Array.isArray(places) || places.length === 0) {
-    return <View style={{ flex: 1 }} />;
+  if (!places || places.length === 0) {
+    return <View style={placeProfileStyles.carouselSection} />;
   }
 
   return (
-    <FlatList
-      ref={flatListRef}
-      data={places}
-      renderItem={renderItem}
-      keyExtractor={(_, index) => `placecard-${index}`}
-      horizontal={false}
-      showsVerticalScrollIndicator={false}
-      decelerationRate="normal"
-      contentContainerStyle={{ paddingVertical: 5 }}
-      ListHeaderComponent={renderHeader}
-      onScroll={handleScroll}
-      scrollEventThrottle={16} // Optimize scroll event frequency
-    />
+    <View style={placeProfileStyles.carouselSection}>
+      <FlatList
+        ref={flatListRef}
+        data={places}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `place-${item.id ?? index}`}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        snapToInterval={400}
+        decelerationRate="fast"
+        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+        refreshControl={refreshControl}
+        onScrollToIndexFailed={(info) => {
+          flatListRef.current?.scrollToOffset({
+            offset: info.index * 400,
+            animated: true,
+          });
+        }}
+        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  card: {
+    width: 300,
+    height: 200,
+    borderRadius: 10,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    position: "relative",
+  },
+});

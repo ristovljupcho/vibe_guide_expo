@@ -1,8 +1,8 @@
+import { COLORS } from "@/constants/colors";
 import { useAuth } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Redirect, Tabs } from "expo-router";
 import React from "react";
-import { COLORS } from "../../constants/colors";
 
 function TabsLayout() {
   // Authentication
@@ -17,9 +17,10 @@ function TabsLayout() {
         tabBarActiveTintColor: COLORS.textLight,
         tabBarInactiveTintColor: COLORS.textDimmed,
         tabBarStyle: {
-          borderTopWidth: 0,
           backgroundColor: COLORS.overlay1,
-          height: 70,
+          borderTopWidth: 0,
+          paddingTop: 5,
+          height: 80,
         },
         tabBarLabelStyle: {
           fontSize: 12,

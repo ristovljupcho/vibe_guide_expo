@@ -28,7 +28,7 @@ export const authStyles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: COLORS.text,
+    color: COLORS.textPrimary,
     textAlign: "center",
     marginBottom: 40,
   },
@@ -47,7 +47,7 @@ export const authStyles = StyleSheet.create({
   },
   textInput: {
     fontSize: 16,
-    color: COLORS.text,
+    color: COLORS.textLight,
     paddingVertical: 16,
     paddingHorizontal: 20,
     backgroundColor: COLORS.background,
@@ -62,7 +62,7 @@ export const authStyles = StyleSheet.create({
     padding: 4,
   },
   authButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.light,
     paddingVertical: 18,
     borderRadius: 12,
     marginTop: 20,

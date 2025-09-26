@@ -1,189 +1,146 @@
-import FilterPopup from "@/components/FilterPopup";
-import VerticalPlaceCardCarousel from "@/components/PlaceVerticalCarousel";
-import { COLORS } from "@/constants/colors";
+import { homeStyles } from "@/assets/styles/home.styles";
+import { textStyles } from "@/assets/styles/text.styles";
+import PlaceHeader from "@/components/PlaceHeader";
+import PlaceVerticalCarousel from "@/components/PlaceVerticalCarousel";
+import EmptyState from "@/components/states/EmptyState";
+import LoadingState from "@/components/states/LoadingState";
 import { BASE_URL } from "@/scripts/config";
 import { PlaceCardProps, TraitCarouselProps } from "@/scripts/types";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, StyleSheet, TouchableOpacity, View } from "react-native";
-import { textStyles } from "../../assets/styles/text.styles";
+import React, { useCallback, useEffect, useState } from "react";
+import { Pressable, RefreshControl, Text, View } from "react-native";
+import { COLORS } from "../../constants/colors";
 
 export default function PlacesScreen() {
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [placesData, setPlacesData] = useState<PlaceCardProps[]>([]);
   const [traitsData, setTraitsData] = useState<TraitCarouselProps[]>([]);
-  const [error, setError] = useState(false);
-  const [isHeaderTextVisible, setIsHeaderTextVisible] = useState(true);
-  const [isFilterActive, setIsFilterActive] = useState(false);
-  const [isFilterMenuVisible, setIsFilterMenuVisible] = useState(false);
 
-  const backgroundAnimation = useRef(new Animated.Value(0)).current;
-  const textOpacityAnimation = useRef(new Animated.Value(0)).current;
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(false);
+  const loadData = useCallback(
+    async (filters?: {
+      traits?: string[];
+      sortBy?: string;
+      sortDirection?: string;
+    }) => {
+      try {
+        setLoading(true);
 
-      // Fetch places data
-      const placesRes = await fetch(`${BASE_URL}/places`);
-      if (!placesRes.ok) throw new Error("Failed to fetch places");
-      const placesJson: PlaceCardProps[] = await placesRes.json();
-      setPlacesData(placesJson || []);
+        // Build query params dynamically
+        const params = new URLSearchParams();
+        if (filters?.traits && filters.traits.length > 0) {
+          filters.traits.forEach((t) => params.append("traits", t));
+        }
+        if (filters?.sortBy) params.append("sortBy", filters.sortBy);
+        if (filters?.sortDirection)
+          params.append("sortDirection", filters.sortDirection);
 
-      // Fetch traits data
-      // const traitsRes = await fetch(`${BASE_URL}/traits`);
-      // if (!traitsRes.ok) throw new Error("Failed to fetch traits");
-      // const traitsJson: TraitCarouselProps[] = await traitsRes.json();
-      // setTraitsData(traitsJson || []);
-    } catch (err) {
-      console.error("Error loading data:", err);
-      setError(true);
-      setPlacesData([]);
-      setTraitsData([]);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+        const placesUrl = `${BASE_URL}/places${
+          params.toString() ? `?${params}` : ""
+        }`;
+
+        const [placesRes, traitsRes] = await Promise.all([
+          fetch(placesUrl),
+          fetch(`${BASE_URL}/traits`),
+        ]);
+
+        const [placesJson, traitsJson] = await Promise.all([
+          placesRes.ok ? placesRes.json() : [],
+          traitsRes.ok ? traitsRes.json() : [],
+        ]);
+
+        setPlacesData(placesJson);
+        setTraitsData(traitsJson);
+      } catch (error) {
+        console.error("Error loading the data:", error);
+        setPlacesData([]);
+        setTraitsData([]);
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(backgroundAnimation, {
-        toValue: isHeaderTextVisible ? 0 : 1,
-        duration: 300,
-        useNativeDriver: false,
-      }),
-      Animated.timing(textOpacityAnimation, {
-        toValue: isHeaderTextVisible ? 0 : 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [isHeaderTextVisible, backgroundAnimation, textOpacityAnimation]);
-
-  const animatedBackgroundColor = backgroundAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [COLORS.overlay1, COLORS.overlay3],
-  });
-
-  const handleFilterPress = () => {
-    setIsFilterActive(!isFilterActive);
-    setIsFilterMenuVisible(!isFilterMenuVisible);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
   };
 
-  const handleCloseMenu = () => {
-    setIsFilterActive(false);
-    setIsFilterMenuVisible(false);
-  };
+  if (loading && !refreshing) {
+    return <LoadingState />;
+  }
 
-  const handleHeaderVisibilityChange = useCallback((isVisible: boolean) => {
-    setIsHeaderTextVisible(isVisible);
-  }, []);
-
-  //todo: Handle refresh
-  //todo: Handle error
-  //todo: Handle empty list
-
-  return (
-    <View style={styles.container}>
-      {/* Sticky Header */}
-      <Animated.View
-        style={[styles.header, { backgroundColor: animatedBackgroundColor }]}
+  if (!placesData || placesData.length === 0) {
+    return (
+      <View
+        style={{
+          backgroundColor: COLORS.background,
+          flex: 1,
+          justifyContent: "center",
+        }}
       >
-        <View style={styles.headerSection}>
-          {!isHeaderTextVisible && (
-            <Animated.Text
+        <EmptyState label={"No places found with that filter!"} />
+        <View style={{ alignItems: "center", marginTop: 8 }}>
+          <Pressable
+            onPress={() => loadData()} // call default loadData without filters
+            style={{
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              backgroundColor: COLORS.primary,
+              borderRadius: 12,
+            }}
+          >
+            <Text
               style={[
-                textStyles.heading3Text,
+                textStyles.bodyText,
                 {
-                  color: COLORS.textPrimary,
-                  textAlign: "left",
-                  letterSpacing: 3,
-                  opacity: textOpacityAnimation,
+                  color: "white",
+                  fontWeight: "bold",
+                  textAlign: "center",
                 },
               ]}
             >
-              All places
-            </Animated.Text>
-          )}
+              See all
+            </Text>
+          </Pressable>
         </View>
-        <View style={styles.headerSection} />
-        <View style={[styles.headerSection, styles.iconsContainer]}>
-          <TouchableOpacity style={styles.iconBtn} onPress={handleFilterPress}>
-            <AntDesign
-              name="filter"
-              size={24}
-              color={isFilterActive ? COLORS.primary : "white"}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBtn}>
-            <Ionicons name="map-outline" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
-
-      {/* Filter Popup */}
-      <FilterPopup
-        traits={traitsData}
-        visible={isFilterMenuVisible}
-        onClose={handleCloseMenu}
-      />
-
-      {/* Scrollable Content */}
-      <View style={styles.body}>
-        {/* Places Carousel */}
-        <VerticalPlaceCardCarousel
-          places={placesData}
-          onHeaderVisibilityChange={handleHeaderVisibilityChange}
-        />
       </View>
+    );
+  }
+
+  return (
+    <View style={homeStyles.container}>
+      <PlaceHeader
+        traits={traitsData}
+        onApplyFilters={(
+          selectedTraits,
+          _price,
+          selectedSort,
+          selectedOrder
+        ) => {
+          loadData({
+            traits: selectedTraits.map((t) => t.name), // backend expects string list
+            sortBy: selectedSort || undefined,
+            sortDirection: selectedOrder || undefined,
+          });
+        }}
+      />
+      <PlaceVerticalCarousel
+        places={placesData}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={COLORS.primary}
+          />
+        }
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  center: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  headerSection: {
-    flex: 1,
-  },
-  body: {
-    flex: 1,
-    marginTop: 60,
-  },
-  iconsContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  iconBtn: {
-    padding: 6,
-    marginLeft: 12,
-    backgroundColor: "rgba(255, 255, 255, 0.5)", // 50% transparent white
-    borderRadius: 10,
-  },
-});

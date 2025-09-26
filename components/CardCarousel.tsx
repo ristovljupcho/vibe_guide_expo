@@ -1,9 +1,9 @@
 import { cardStyles } from "@/assets/styles/card.styles";
+import { CardProps } from "@/scripts/types";
 import React, { useRef, useState } from "react";
 import { FlatList, ListRenderItemInfo, View, ViewToken } from "react-native";
 import { placeProfileStyles } from "../assets/styles/place-profile.styles";
 import Card from "./Card";
-import { CardProps } from "@/scripts/types";
 
 type CarouselProps = {
   cards: CardProps[];

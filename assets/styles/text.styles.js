@@ -19,11 +19,11 @@ export const textStyles = StyleSheet.create({
   },
   heading3Text: {
     fontFamily: "Lato_700Bold",
-    fontSize: 20,
+    fontSize: 24,
   },
   heading2Text: {
     fontFamily: "Lato_700Bold",
-    fontSize: 24,
+    fontSize: 28,
   },
   heading1Text: {
     fontFamily: "Lato_900Black",

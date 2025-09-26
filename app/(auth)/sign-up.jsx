@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { authStyles } from "../../assets/styles/auth.styles";
+import { textStyles } from "../../assets/styles/text.styles";
 import { COLORS } from "../../constants/colors";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -79,13 +80,15 @@ function SignUpScreen() {
             />
           </View>
 
-          <Text style={authStyles.title}>Create Account</Text>
+          <Text style={[textStyles.heading1Text, authStyles.title]}>
+            Create Account
+          </Text>
 
           <View style={authStyles.formContainer}>
             {/* Email Input */}
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={authStyles.textInput}
+                style={[textStyles.bodyText, authStyles.textInput]}
                 placeholder="Enter email"
                 placeholderTextColor={COLORS.textLight}
                 value={email}
@@ -98,7 +101,7 @@ function SignUpScreen() {
             {/* Password Input */}
             <View style={authStyles.inputContainer}>
               <TextInput
-                style={authStyles.textInput}
+                style={[textStyles.bodyText, authStyles.textInput]}
                 placeholder="Enter password"
                 placeholderTextColor={COLORS.textLight}
                 value={password}
@@ -128,7 +131,7 @@ function SignUpScreen() {
               disabled={loading}
               activeOpacity={0.8}
             >
-              <Text style={authStyles.buttonText}>
+              <Text style={[textStyles.bodyText, authStyles.buttonText]}>
                 {loading ? "Creating Account..." : "Sign Up"}
               </Text>
             </TouchableOpacity>
@@ -138,9 +141,11 @@ function SignUpScreen() {
               style={authStyles.linkContainer}
               onPress={() => router.back()}
             >
-              <Text style={authStyles.linkText}>
+              <Text style={[textStyles.bodyText, authStyles.linkText]}>
                 Already have an account?{" "}
-                <Text style={authStyles.link}>Sign In</Text>
+                <Text style={[textStyles.bodyText, authStyles.link]}>
+                  Sign In
+                </Text>
               </Text>
             </TouchableOpacity>
           </View>

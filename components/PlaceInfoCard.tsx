@@ -1,4 +1,5 @@
 import { COLORS } from "@/constants/colors";
+import { PlaceInformationProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React, { useState } from "react";
@@ -11,15 +12,6 @@ import {
   UIManager,
   View,
 } from "react-native";
-
-type PlaceInfoCardProps = {
-  rating: number;
-  type: string;
-  priceLevel: string;
-  address: string;
-  workingHours: { days: string; hours: string }[];
-  description: string;
-};
 
 // Enable LayoutAnimation on Android
 if (
@@ -36,7 +28,7 @@ export default function PlaceInfoCard({
   address,
   workingHours,
   description,
-}: PlaceInfoCardProps) {
+}: PlaceInformationProps) {
   const [expanded, setExpanded] = useState(false);
 
   const priceDisplay = (() => {
