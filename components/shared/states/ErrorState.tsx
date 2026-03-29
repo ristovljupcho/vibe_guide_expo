@@ -1,31 +1,35 @@
-import { textStyles } from "@/assets/styles/text.styles";
 import { COLORS } from "@/constants/colors";
-import React from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-type EmptyStateProps = {
-  label: string;
+type ErrorStateProps = {
+  message?: string;
 };
 
-export default function EmptyState({ label }: EmptyStateProps) {
+function ErrorState({ message }: ErrorStateProps) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.message, textStyles.bodyText]}>{label}</Text>
+      <Text style={styles.message}>
+        {message || "Uppss error loading screen!"}
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 20,
     backgroundColor: COLORS.background,
-    paddingVertical: 20,
   },
   message: {
+    fontSize: 20,
+    fontWeight: "bold",
     color: COLORS.textPrimary,
-    opacity: 0.7,
     textAlign: "center",
-    letterSpacing: 1,
   },
 });
+
+export default memo(ErrorState);

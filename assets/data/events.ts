@@ -1,8 +1,8 @@
-import { CardProps } from "../../components/Card";
+import { CardProps } from "@/scripts/types";
 
 export const events: CardProps[] = [
   {
-    eventName: "Sunset Cocktail Hour",
+    name: "Sunset Cocktail Hour",
     placeName: "Casa Bar",
     description:
       "Enjoy heavenly cold pints and refreshing cocktails while watching the sunset over the city. Perfect for mingling and unwinding after a long day.",
@@ -11,7 +11,7 @@ export const events: CardProps[] = [
     image: require("@/assets/data/casa-images/cocktail1.jpg"),
   },
   {
-    eventName: "Tropical Tiki Night",
+    name: "Tropical Tiki Night",
     placeName: "Casa Bar",
     description:
       "Step into a tropical paradise with exotic cocktails, vibrant music, and a lively crowd ready to dance the night away.",

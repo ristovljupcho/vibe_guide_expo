@@ -13,8 +13,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { authStyles } from "../../assets/styles/auth.styles";
-import { textStyles } from "../../assets/styles/text.styles";
+import { textStyles } from "@/assets/styles/shared/text.styles";
+import { authStyles } from "@/assets/styles/views/auth.styles";
 import { COLORS } from "../../constants/colors";
 
 function SignInScreen() {

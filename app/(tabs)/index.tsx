@@ -1,4 +1,8 @@
-import PlaceCardCarousel from "@/components/PlaceCarousel";
+import { homeStyles } from "@/assets/styles/views/home.styles";
+import { textStyles } from "@/assets/styles/shared/text.styles";
+import QuickSearchCarousel from "@/components/home/QuickSearchCarousel";
+import PlaceCardCarousel from "@/components/places/PlaceCarousel";
+import CardCarousel from "@/components/shared/cards/CardCarousel";
 import { BASE_URL } from "@/scripts/config";
 import { CardProps, PlaceCardProps } from "@/scripts/types";
 import React, { useCallback, useEffect, useState } from "react";
@@ -9,10 +13,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { homeStyles } from "../../assets/styles/home.styles";
-import { textStyles } from "../../assets/styles/text.styles";
-import CardCarousel from "../../components/CardCarousel";
-import QuickSearchCarousel from "../../components/QuickSearchCarousel";
 import { COLORS } from "../../constants/colors";
 
 export default function HomeScreen() {
@@ -89,7 +89,7 @@ export default function HomeScreen() {
   // Show spinner while initial load is happening
   if (loading && !refreshing) {
     return (
-      <View style={[homeStyles.container, { justifyContent: "center" }]}>
+      <View style={[homeStyles.container, homeStyles.loadingContainer]}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );

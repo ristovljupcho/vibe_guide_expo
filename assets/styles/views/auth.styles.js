@@ -1,0 +1,93 @@
+import { Dimensions, StyleSheet } from "react-native";
+import { COLORS } from "@/constants/colors";
+import { RADIUS, SPACING } from "@/assets/styles/shared/tokens";
+
+const { height } = Dimensions.get("window");
+
+export const authStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: SPACING.screen,
+    paddingTop: 40,
+  },
+  imageContainer: {
+    height: height * 0.3,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: 250,
+    height: 250,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: COLORS.textPrimary,
+    textAlign: "center",
+    marginBottom: 40,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: COLORS.textLight,
+    textAlign: "center",
+    marginBottom: SPACING.section,
+  },
+  formContainer: {
+    flex: 1,
+  },
+  inputContainer: {
+    marginBottom: SPACING.xxl,
+    position: "relative",
+  },
+  textInput: {
+    fontSize: 16,
+    color: COLORS.textLight,
+    paddingVertical: 16,
+    paddingHorizontal: SPACING.xxl,
+    backgroundColor: COLORS.background,
+    borderRadius: RADIUS.lg,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  eyeButton: {
+    position: "absolute",
+    right: 16,
+    top: 16,
+    padding: SPACING.xxs,
+  },
+  authButton: {
+    backgroundColor: COLORS.light,
+    paddingVertical: 18,
+    borderRadius: RADIUS.lg,
+    marginTop: SPACING.xxl,
+    marginBottom: SPACING.section,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.white,
+    textAlign: "center",
+  },
+  linkContainer: {
+    alignItems: "center",
+    paddingBottom: SPACING.xxl,
+  },
+  linkText: {
+    fontSize: 16,
+    color: COLORS.textLight,
+  },
+  link: {
+    color: COLORS.primary,
+    fontWeight: "600",
+  },
+});

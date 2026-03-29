@@ -1,10 +1,11 @@
-import { textStyles } from "@/assets/styles/text.styles";
+import { textStyles } from "@/assets/styles/shared/text.styles";
+import { RADIUS, SPACING } from "@/assets/styles/shared/tokens";
 import { COLORS, TRANSPARENCY } from "@/constants/colors";
 import { ORDER, PLACE_SORT } from "@/constants/sort";
 import { TraitCarouselProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import {
   Dimensions,
   Modal,
@@ -30,7 +31,7 @@ type PlaceHeaderProps = {
   ) => void;
 };
 
-export default function PlaceHeader({
+function PlaceHeader({
   onSmilePress,
   traits = [],
   onApplyFilters,
@@ -144,7 +145,7 @@ export default function PlaceHeader({
                 {selectedTraits.length > 0 && (
                   <Pressable onPress={() => setSelectedTraits([])}>
                     <AntDesign
-                      name="closecircle"
+                      name="close-circle"
                       size={18}
                       color={COLORS.primary}
                     />
@@ -176,7 +177,7 @@ export default function PlaceHeader({
                 {selectedPriceLevel && (
                   <Pressable onPress={() => setSelectedPriceLevel("")}>
                     <AntDesign
-                      name="closecircle"
+                      name="close-circle"
                       size={18}
                       color={COLORS.primary}
                     />
@@ -208,7 +209,7 @@ export default function PlaceHeader({
                 {selectedSort && (
                   <Pressable onPress={() => setSelectedSort("")}>
                     <AntDesign
-                      name="closecircle"
+                      name="close-circle"
                       size={18}
                       color={COLORS.primary}
                     />
@@ -240,7 +241,7 @@ export default function PlaceHeader({
                 {selectedOrder && (
                   <Pressable onPress={() => setSelectedOrder("")}>
                     <AntDesign
-                      name="closecircle"
+                      name="close-circle"
                       size={18}
                       color={COLORS.primary}
                     />
@@ -312,26 +313,26 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "#2A2A2B",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 20,
-    marginHorizontal: 5,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
+    padding: SPACING.xxl,
+    marginHorizontal: SPACING.xs,
   },
   popupSection: {
     borderBottomColor: COLORS.overlay1,
     borderBottomWidth: 1,
-    marginBottom: 10,
+    marginBottom: SPACING.md,
   },
   popupHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    marginBottom: SPACING.xxl,
+    paddingHorizontal: SPACING.xxl,
+    paddingVertical: SPACING.md,
     backgroundColor: COLORS.overlay1,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: RADIUS.xl,
+    borderTopRightRadius: RADIUS.xl,
     borderBottomWidth: 1,
     borderBottomColor: `${COLORS.primary}${TRANSPARENCY[50]}`,
   },
@@ -353,10 +354,10 @@ const styles = StyleSheet.create({
   item: {
     borderColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderRadius: 16,
-    paddingHorizontal: 12,
+    borderRadius: RADIUS.xl,
+    paddingHorizontal: SPACING.lg,
     paddingVertical: 6,
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
     backgroundColor: "transparent",
   },
   itemText: {
@@ -383,19 +384,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   resetRow: {
-    marginTop: 12,
+    marginTop: SPACING.lg,
     alignItems: "flex-end",
-    paddingHorizontal: 4,
+    paddingHorizontal: SPACING.xxs,
   },
   resetText: {
     color: `${COLORS.primary}${TRANSPARENCY[50]}`,
     textDecorationLine: "underline",
   },
   applyButton: {
-    marginTop: 20,
+    marginTop: SPACING.xxl,
     backgroundColor: COLORS.primary,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingVertical: SPACING.md,
+    borderRadius: RADIUS.lg,
     alignItems: "center",
   },
   applyButtonText: {
@@ -403,12 +404,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   popupFooter: {
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingHorizontal: SPACING.xxl,
+    paddingBottom: SPACING.md,
     backgroundColor: COLORS.overlay1,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    borderBottomLeftRadius: RADIUS.xl,
+    borderBottomRightRadius: RADIUS.xl,
     borderTopWidth: 1,
     borderTopColor: `${COLORS.primary}${TRANSPARENCY[50]}`,
   },
 });
+
+export default memo(PlaceHeader);

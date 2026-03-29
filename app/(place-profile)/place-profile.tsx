@@ -1,19 +1,19 @@
-import CardCarousel from "@/components/CardCarousel";
-import ImageCarousel from "@/components/ImageCarousel";
-import PlaceInfoCard from "@/components/PlaceInfoCard";
-import EmptyState from "@/components/states/EmptyState";
-import ErrorState from "@/components/states/ErrorState";
-import LoadingState from "@/components/states/LoadingState";
-import TraitCarousel from "@/components/TraitCarousel";
+import { textStyles } from "@/assets/styles/shared/text.styles";
+import { homeStyles } from "@/assets/styles/views/home.styles";
+import { placeProfileStyles } from "@/assets/styles/views/place-profile.styles";
+import ImageCarousel from "@/components/place-profile/ImageCarousel";
+import PlaceInfoCard from "@/components/place-profile/PlaceInfoCard";
+import TraitCarousel from "@/components/place-profile/TraitCarousel";
+import CardCarousel from "@/components/shared/cards/CardCarousel";
+import EmptyState from "@/components/shared/states/EmptyState";
+import ErrorState from "@/components/shared/states/ErrorState";
+import LoadingState from "@/components/shared/states/LoadingState";
 import { CANT_LOAD_SCREEN } from "@/constants/error-messages";
 import { BASE_URL } from "@/scripts/config";
 import { CardProps, PlaceProps, TraitCarouselProps } from "@/scripts/types";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
-import { homeStyles } from "../../assets/styles/home.styles";
-import { placeProfileStyles } from "../../assets/styles/place-profile.styles";
-import { textStyles } from "../../assets/styles/text.styles";
 import { COLORS } from "../../constants/colors";
 
 export default function PlaceProfileScreen() {

@@ -1,8 +1,9 @@
 import { COLORS } from "@/constants/colors";
+import { formatPriceLevel } from "@/scripts/formatters";
 import { PlaceInformationProps } from "@/scripts/types";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import {
   LayoutAnimation,
   Platform,
@@ -13,7 +14,8 @@ import {
   View,
 } from "react-native";
 
-// Enable LayoutAnimation on Android
+const DESCRIPTION_PREVIEW_LENGTH = 50;
+
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -21,7 +23,7 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-export default function PlaceInfoCard({
+function PlaceInfoCard({
   rating,
   type,
   priceLevel,
@@ -30,29 +32,17 @@ export default function PlaceInfoCard({
   description,
 }: PlaceInformationProps) {
   const [expanded, setExpanded] = useState(false);
-
-  const priceDisplay = (() => {
-    switch (priceLevel) {
-      case "INEXPENSIVE":
-        return "$";
-      case "MODERATE":
-        return "$$";
-      case "EXPENSIVE":
-        return "$$$";
-      default:
-        return "";
-    }
-  })();
+  const priceDisplay = formatPriceLevel(priceLevel);
 
   const displayedText = expanded
     ? description
-    : description.length > 50
-    ? description.slice(0, 50) + "..."
+    : description.length > DESCRIPTION_PREVIEW_LENGTH
+    ? `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH)}...`
     : description;
 
   const toggleDescription = () => {
     LayoutAnimation.configureNext({
-      duration: 10000, // 1 second
+      duration: 180,
       update: {
         type: LayoutAnimation.Types.easeInEaseOut,
         property: LayoutAnimation.Properties.opacity,
@@ -66,12 +56,11 @@ export default function PlaceInfoCard({
         property: LayoutAnimation.Properties.scaleY,
       },
     });
-    setExpanded(!expanded);
+    setExpanded((currentValue) => !currentValue);
   };
 
   return (
     <View style={styles.card}>
-      {/* Top Row */}
       <View style={styles.topRow}>
         <View style={styles.topColumn}>
           <View style={styles.rating}>
@@ -89,29 +78,29 @@ export default function PlaceInfoCard({
         </View>
       </View>
 
-      {/* Address */}
       <View style={styles.addressRow}>
         <Ionicons name="location-outline" size={16} color="#FAF6F9" />
         <Text style={styles.addressText}>{address}</Text>
       </View>
 
-      {/* Working Hours */}
-      {workingHours.map((wh, idx) => (
-        <View key={idx} style={styles.hoursRow}>
-          <AntDesign name="clockcircleo" size={16} color="#FAF6F9" />
+      {workingHours.map((workingHour) => (
+        <View
+          key={`${workingHour.days}-${workingHour.hours}`}
+          style={styles.hoursRow}
+        >
+          <AntDesign name="clock-circle" size={16} color="#FAF6F9" />
           <Text style={styles.hoursText}>
-            {wh.days} : {wh.hours}
+            {workingHour.days} : {workingHour.hours}
           </Text>
         </View>
       ))}
 
-      {/* Description */}
       <View style={styles.descriptionRow}>
         <TouchableOpacity onPress={toggleDescription}>
           <Text style={styles.descriptionText}>{displayedText}</Text>
-          {description.length > 50 && (
+          {description.length > DESCRIPTION_PREVIEW_LENGTH && (
             <Text style={styles.readMore}>
-              {expanded ? "Read less ▲" : "Read more ▼"}
+              {expanded ? "Read less" : "Read more"}
             </Text>
           )}
         </TouchableOpacity>
@@ -186,3 +175,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
+
+export default memo(PlaceInfoCard);

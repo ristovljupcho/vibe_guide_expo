@@ -1,13 +1,13 @@
-import { homeStyles } from "@/assets/styles/home.styles";
-import { textStyles } from "@/assets/styles/text.styles";
-import PlaceHeader from "@/components/PlaceHeader";
-import PlaceVerticalCarousel from "@/components/PlaceVerticalCarousel";
-import EmptyState from "@/components/states/EmptyState";
-import LoadingState from "@/components/states/LoadingState";
+import { textStyles } from "@/assets/styles/shared/text.styles";
+import { homeStyles } from "@/assets/styles/views/home.styles";
+import PlaceHeader from "@/components/places/PlaceHeader";
+import PlaceVerticalCarousel from "@/components/places/PlaceVerticalCarousel";
+import EmptyState from "@/components/shared/states/EmptyState";
+import LoadingState from "@/components/shared/states/LoadingState";
 import { BASE_URL } from "@/scripts/config";
 import { PlaceCardProps, TraitCarouselProps } from "@/scripts/types";
 import React, { useCallback, useEffect, useState } from "react";
-import { Pressable, RefreshControl, Text, View } from "react-native";
+import { RefreshControl, Pressable, Text, View } from "react-native";
 import { COLORS } from "../../constants/colors";
 
 export default function PlacesScreen() {
@@ -78,34 +78,14 @@ export default function PlacesScreen() {
 
   if (!placesData || placesData.length === 0) {
     return (
-      <View
-        style={{
-          backgroundColor: COLORS.background,
-          flex: 1,
-          justifyContent: "center",
-        }}
-      >
+      <View style={homeStyles.emptyStateContainer}>
         <EmptyState label={"No places found with that filter!"} />
-        <View style={{ alignItems: "center", marginTop: 8 }}>
+        <View style={homeStyles.emptyStateActionWrapper}>
           <Pressable
             onPress={() => loadData()} // call default loadData without filters
-            style={{
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              backgroundColor: COLORS.primary,
-              borderRadius: 12,
-            }}
+            style={homeStyles.emptyStateAction}
           >
-            <Text
-              style={[
-                textStyles.bodyText,
-                {
-                  color: "white",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                },
-              ]}
-            >
+            <Text style={[textStyles.bodyText, homeStyles.emptyStateActionText]}>
               See all
             </Text>
           </Pressable>

@@ -1,6 +1,9 @@
-import PlaceCard from "@/components/PlaceCard";
+import { cardStyles } from "@/assets/styles/shared/card.styles";
+import { CARD, SPACING } from "@/assets/styles/shared/tokens";
+import { placeProfileStyles } from "@/assets/styles/views/place-profile.styles";
+import PlaceCard from "@/components/places/PlaceCard";
 import { PlaceCardProps } from "@/scripts/types";
-import React, { useRef } from "react";
+import React, { memo, useRef } from "react";
 import {
   FlatList,
   ListRenderItemInfo,
@@ -8,14 +11,13 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { placeProfileStyles } from "../assets/styles/place-profile.styles";
 
 type PlaceVerticalCarouselProps = {
   places: PlaceCardProps[];
   refreshControl?: React.ReactElement<RefreshControlProps>;
 };
 
-export default function PlaceVerticalCarousel({
+function PlaceVerticalCarousel({
   places,
   refreshControl,
 }: PlaceVerticalCarouselProps) {
@@ -23,7 +25,7 @@ export default function PlaceVerticalCarousel({
 
   const renderItem = ({ item }: ListRenderItemInfo<PlaceCardProps>) => (
     <View style={styles.cardContainer}>
-      <View style={styles.card}>
+      <View style={cardStyles.verticalCard}>
         <PlaceCard {...item} />
       </View>
     </View>
@@ -42,17 +44,17 @@ export default function PlaceVerticalCarousel({
         keyExtractor={(item, index) => `place-${item.id ?? index}`}
         horizontal={false}
         showsVerticalScrollIndicator={false}
-        snapToInterval={400}
+        snapToInterval={CARD.height + SPACING.md}
         decelerationRate="fast"
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         refreshControl={refreshControl}
         onScrollToIndexFailed={(info) => {
           flatListRef.current?.scrollToOffset({
-            offset: info.index * 400,
+            offset: info.index * (CARD.height + SPACING.md),
             animated: true,
           });
         }}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>
   );
@@ -63,16 +65,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  card: {
-    width: 300,
-    height: 200,
-    borderRadius: 10,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-    position: "relative",
+  separator: {
+    height: SPACING.md,
   },
 });
+
+export default memo(PlaceVerticalCarousel);

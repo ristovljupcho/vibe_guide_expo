@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { authStyles } from "../../assets/styles/auth.styles";
+import { authStyles } from "@/assets/styles/views/auth.styles";
 import { COLORS } from "../../constants/colors";
 function VerifyEmail({ email, onBack }) {
   const { isLoaded, signUp, setActive } = useSignUp();

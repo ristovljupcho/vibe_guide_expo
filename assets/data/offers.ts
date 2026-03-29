@@ -1,7 +1,8 @@
-import { CardProps } from "../../components/Card";
+import { CardProps } from "@/scripts/types";
 
 export const offers: CardProps[] = [
   {
+    name: "Tequila Sunrise Deal",
     placeName: "Casa Bar",
     description:
       "For every Tequila Sunrise cocktail you get 40% off on the next one!",
@@ -10,6 +11,7 @@ export const offers: CardProps[] = [
     image: require("@/assets/data/casa-images/cocktail1.jpg"),
   },
   {
+    name: "Mojito Happy Hour",
     placeName: "Casa Bar",
     description:
       "Buy one Mojito and get the second at half price! Fresh mint and lime all night long.",
@@ -18,6 +20,7 @@ export const offers: CardProps[] = [
     image: require("@/assets/data/casa-images/cocktail2.jpg"),
   },
   {
+    name: "Whiskey Sour Thursday",
     placeName: "Casa Bar",
     description:
       "Enjoy 30% off on all Whiskey Sour cocktails every Thursday evening.",
@@ -26,6 +29,7 @@ export const offers: CardProps[] = [
     image: require("@/assets/data/casa-images/cocktail1.jpg"),
   },
   {
+    name: "Cosmopolitan Special",
     placeName: "Casa Bar",
     description:
       "Half-price Cosmopolitans from 5 PM to 7 PM daily. Perfect way to start your evening!",
@@ -34,6 +38,7 @@ export const offers: CardProps[] = [
     image: require("@/assets/data/casa-images/cocktail2.jpg"),
   },
   {
+    name: "Frozen Margarita Friday",
     placeName: "Casa Bar",
     description:
       "Get 2-for-1 on frozen margaritas every Friday night. Chill out and party hard!",

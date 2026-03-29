@@ -1,20 +1,22 @@
-import { PlaceCardProps } from "../../components/PlaceCard";
+import { PlaceCardProps } from "@/scripts/types";
 
 export const places: PlaceCardProps[] = [
   {
-    placeName: "Casa Bar",
-    location: "Downtown, Skopje",
+    id: "casa-bar",
+    name: "Casa Bar",
     rating: 4.7,
     description: "Cozy bar with live music and amazing cocktails.",
-    traits: ["Cozy", "Live Music", "Cocktails"],
-    image: require("@/assets/data/casa-images/cocktail1.jpg"),
+    primaryType: "Cocktail Bar",
+    priceLevel: "MODERATE",
+    topTraits: ["Cozy", "Live Music", "Cocktails"],
   },
   {
-    placeName: "Ocean View Lounge",
-    location: "Beachfront, Ohrid",
+    id: "ocean-view-lounge",
+    name: "Ocean View Lounge",
     rating: 4.5,
     description: "Relax with a seaside vibe and specialty drinks.",
-    traits: ["Seaside", "Chill", "Specialty Drinks"],
-    image: require("@/assets/data/casa-images/cocktail2.jpg"),
+    primaryType: "Lounge",
+    priceLevel: "EXPENSIVE",
+    topTraits: ["Seaside", "Chill", "Specialty Drinks"],
   },
 ];

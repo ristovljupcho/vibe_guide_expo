@@ -1,8 +1,8 @@
 import { COLORS } from "@/constants/colors";
-import React from "react";
+import React, { memo } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-export default function LoadingState() {
+function LoadingState() {
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color={COLORS.primary} />
@@ -18,3 +18,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
 });
+
+export default memo(LoadingState);

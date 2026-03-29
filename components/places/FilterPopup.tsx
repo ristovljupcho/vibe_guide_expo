@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import { TraitCarouselProps } from "@/scripts/types";
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import {
   Animated,
   Modal,
@@ -8,7 +8,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { textStyles } from "../assets/styles/text.styles";
+import { textStyles } from "@/assets/styles/shared/text.styles";
 
 type FilterPopupProps = {
   traits: TraitCarouselProps[];
@@ -16,7 +16,7 @@ type FilterPopupProps = {
   onClose: () => void;
 };
 
-export default function FilterPopup({
+function FilterPopup({
   traits,
   visible,
   onClose,
@@ -142,3 +142,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default memo(FilterPopup);

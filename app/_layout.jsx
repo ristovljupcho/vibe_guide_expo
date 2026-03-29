@@ -1,4 +1,4 @@
-import SafeScreen from "@/components/SafeScreen";
+import SafeScreen from "@/components/shared/layout/SafeScreen";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import {
