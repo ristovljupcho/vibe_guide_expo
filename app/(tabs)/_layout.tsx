@@ -1,43 +1,119 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/shared/theme/colors';
+import { useColorScheme } from '@/shared/theme/useColorScheme';
+
+type TabIconName = keyof typeof Ionicons.glyphMap;
+
+function TabIcon({
+  color,
+  focused,
+  activeName,
+  inactiveName,
+}: {
+  color: string;
+  focused: boolean;
+  activeName: TabIconName;
+  inactiveName: TabIconName;
+}) {
+  return <Ionicons color={color} name={focused ? activeName : inactiveName} size={24} />;
+}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const palette = Colors[colorScheme ?? 'light'];
+  const insets = useSafeAreaInsets();
+  const tabBarBottomPadding = Math.max(insets.bottom, 16);
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
+        tabBarActiveTintColor: palette.primary,
+        tabBarInactiveTintColor: palette.tabIconDefault,
+        tabBarStyle: {
+          backgroundColor: palette.card,
+          borderTopColor: palette.border,
+          height: 64 + tabBarBottomPadding,
+          paddingTop: 8,
+          paddingBottom: tabBarBottomPadding,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              activeName="home"
+              color={color}
+              focused={focused}
+              inactiveName="home-outline"
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              activeName="compass"
+              color={color}
+              focused={focused}
+              inactiveName="compass-outline"
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: 'Saved',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              activeName="bookmark"
+              color={color}
+              focused={focused}
+              inactiveName="bookmark-outline"
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="events"
+        options={{
+          title: 'Events',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              activeName="calendar"
+              color={color}
+              focused={focused}
+              inactiveName="calendar-outline"
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              activeName="person"
+              color={color}
+              focused={focused}
+              inactiveName="person-outline"
+            />
+          ),
         }}
       />
     </Tabs>
