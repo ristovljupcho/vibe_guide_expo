@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useClerk } from '@clerk/expo';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -35,10 +36,12 @@ const iconMap = {
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { signOut } = useClerk();
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { colorScheme, toggleColorScheme } = useAppColorScheme();
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -53,6 +56,17 @@ export default function ProfileScreen() {
       mounted = false;
     };
   }, []);
+
+  const handleLogout = async () => {
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+      router.replace('/login' as Href);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   if (!profile) {
     return (
@@ -147,15 +161,17 @@ export default function ProfileScreen() {
           </View>
 
           <Pressable
+            disabled={isSigningOut}
+            onPress={handleLogout}
             style={({ pressed }) => [
               styles.logoutButton,
               {
                 backgroundColor: colors.destructive,
-                opacity: pressed ? 0.9 : 1,
+                opacity: isSigningOut ? 0.64 : pressed ? 0.9 : 1,
               },
             ]}>
             <Text style={[styles.logoutText, { color: colors.destructiveForeground }]}>
-              Logout
+              {isSigningOut ? 'Logging out...' : 'Logout'}
             </Text>
           </Pressable>
         </View>
