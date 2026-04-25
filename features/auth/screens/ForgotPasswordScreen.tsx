@@ -80,14 +80,15 @@ export default function ForgotPasswordScreen() {
           ? `We sent a recovery code to ${email.trim()}`
           : 'Enter your email and we will send a recovery code'
       }
-      title={submitted ? 'Check Your Email' : 'Forgot Password?'}>
-      <Link asChild href="/login">
-        <Pressable style={styles.backLink}>
-          <Ionicons color={Colors.dark.primary} name="chevron-back" size={18} />
-          <Text style={styles.linkText}>Back to Login</Text>
-        </Pressable>
-      </Link>
-
+      title={submitted ? 'Check Your Email' : 'Forgot Password?'}
+      topAction={
+        <Link asChild href="/login">
+          <Pressable style={styles.backLink}>
+            <Ionicons color={Colors.dark.primary} name="chevron-back" size={18} />
+            <Text style={styles.linkText}>Back to Login</Text>
+          </Pressable>
+        </Link>
+      }>
       <View style={styles.iconWrap}>
         <Ionicons
           color={submitted ? Colors.dark.success : Colors.dark.primary}

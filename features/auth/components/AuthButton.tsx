@@ -68,17 +68,20 @@ export function AuthButton({
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
+    alignSelf: 'stretch',
     borderRadius: 18,
+    height: 54,
     justifyContent: 'center',
-    minHeight: 54,
     overflow: 'hidden',
+    width: '100%',
   },
   gradient: {
     alignItems: 'center',
     borderRadius: 18,
+    height: 54,
     justifyContent: 'center',
-    minHeight: 54,
     paddingHorizontal: 18,
+    width: '100%',
     ...surfaceShadow,
   },
   primaryText: {

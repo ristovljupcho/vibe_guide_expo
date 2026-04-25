@@ -17,9 +17,10 @@ type AuthScaffoldProps = {
   eyebrow?: string;
   title: string;
   subtitle?: string;
+  topAction?: ReactNode;
 };
 
-export function AuthScaffold({ children, eyebrow, title, subtitle }: AuthScaffoldProps) {
+export function AuthScaffold({ children, eyebrow, title, subtitle, topAction }: AuthScaffoldProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -37,6 +38,7 @@ export function AuthScaffold({ children, eyebrow, title, subtitle }: AuthScaffol
           },
         ]}>
         <View style={styles.container}>
+          {topAction ? <View style={styles.topAction}>{topAction}</View> : null}
           <View style={styles.header}>
             {eyebrow ? (
               <View style={styles.eyebrowPill}>
@@ -104,5 +106,9 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: -0.5,
     textAlign: 'center',
+  },
+  topAction: {
+    alignItems: 'flex-start',
+    width: '100%',
   },
 });

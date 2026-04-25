@@ -63,14 +63,15 @@ export default function RegisterScreen() {
     <AuthScaffold
       eyebrow="Step 1 of 2"
       subtitle="Let's get started with the basics"
-      title="Create Account">
-      <Link asChild href="/login">
-        <Pressable style={styles.backLink}>
-          <Ionicons color={Colors.dark.primary} name="chevron-back" size={18} />
-          <Text style={styles.linkText}>Back to Login</Text>
-        </Pressable>
-      </Link>
-
+      title="Create Account"
+      topAction={
+        <Link asChild href="/login">
+          <Pressable style={styles.backLink}>
+            <Ionicons color={Colors.dark.primary} name="chevron-back" size={18} />
+            <Text style={styles.linkText}>Back to Login</Text>
+          </Pressable>
+        </Link>
+      }>
       <View style={styles.form}>
         <AuthTextField
           autoComplete="email"
