@@ -1,10 +1,14 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { ClerkLoaded, ClerkProvider } from '@clerk/expo';
+import { tokenCache } from '@clerk/expo/token-cache';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 
 import { ColorSchemeProvider, useAppColorScheme } from '@/shared/theme/ColorSchemeProvider';
 import { Colors } from '@/shared/theme/colors';
+import { bodyFontFamily, displayFontFamily } from '@/shared/ui/tokens';
 
 function RootNavigator() {
   const { colorScheme } = useAppColorScheme();
@@ -26,6 +30,7 @@ function RootNavigator() {
         },
       }}>
       <Stack screenOptions={{ contentStyle: { backgroundColor: palette.background } }}>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="place" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
@@ -36,10 +41,56 @@ function RootNavigator() {
   );
 }
 
-export default function RootLayout() {
+function MissingClerkKeyScreen() {
   return (
-    <ColorSchemeProvider>
-      <RootNavigator />
-    </ColorSchemeProvider>
+    <View style={styles.missingKeyScreen}>
+      <Text style={styles.missingKeyTitle}>Clerk key missing</Text>
+      <Text style={styles.missingKeyText}>
+        Add EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY to your environment before starting the app.
+      </Text>
+    </View>
   );
 }
+
+export default function RootLayout() {
+  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  if (!publishableKey) {
+    return <MissingClerkKeyScreen />;
+  }
+
+  return (
+    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      <ClerkLoaded>
+        <ColorSchemeProvider>
+          <RootNavigator />
+        </ColorSchemeProvider>
+      </ClerkLoaded>
+    </ClerkProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  missingKeyScreen: {
+    alignItems: 'center',
+    backgroundColor: Colors.dark.background,
+    flex: 1,
+    gap: 12,
+    justifyContent: 'center',
+    padding: 24,
+  },
+  missingKeyText: {
+    color: Colors.dark.mutedForeground,
+    fontFamily: bodyFontFamily,
+    fontSize: 14,
+    lineHeight: 20,
+    maxWidth: 340,
+    textAlign: 'center',
+  },
+  missingKeyTitle: {
+    color: Colors.dark.text,
+    fontFamily: displayFontFamily,
+    fontSize: 24,
+    fontWeight: '800',
+  },
+});
