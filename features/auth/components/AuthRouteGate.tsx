@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { useAuth } from '@clerk/expo';
+import { useAuth, useUser } from '@clerk/expo';
 import { Redirect } from 'expo-router';
 
 import { Colors } from '@/shared/theme/colors';
@@ -15,6 +15,13 @@ function AuthLoadingScreen() {
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user) {
+      console.log('Clerk user:', user);
+    }
+  }, [isLoaded, isSignedIn, user]);
 
   if (!isLoaded) {
     return <AuthLoadingScreen />;
