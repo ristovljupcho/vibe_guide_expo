@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "email": "ти@example.com",
+    "username": "ловецнавибрации",
+    "firstName": "Ристо",
+    "lastName": "Петров",
+    "dateOfBirth": "ДД/ММ/ГГГГ",
+    "password": "Најмалку 8 знаци",
+    "recoveryCode": "123456",
+    "bio": "Сподели какви места сакаш...",
+    "labels": {
+      "email": "Е-пошта",
+      "username": "Корисничко име",
+      "firstName": "Име",
+      "lastName": "Презиме",
+      "dateOfBirth": "Датум на раѓање",
+      "password": "Лозинка",
+      "newPassword": "Нова лозинка",
+      "recoveryEmail": "Е-пошта за враќање",
+      "recoveryCode": "Код за враќање",
+      "verificationCode": "Код за потврда",
+      "bio": "Био / Опис"
+    },
+    "actions": {
+      "login": "Најави се",
+      "register": "Регистрирај се",
+      "next": "Следно",
+      "completeRegistration": "Заврши регистрација",
+      "sendRecoveryEmail": "Испрати е-пошта за враќање",
+      "resetPassword": "Ресетирај лозинка",
+      "verifyEmail": "Потврди е-пошта",
+      "continueWithGoogle": "Продолжи со Google",
+      "continueAsGuest": "Продолжи како гостин",
+      "backToLogin": "Назад кон најава"
+    }
+  }
+}

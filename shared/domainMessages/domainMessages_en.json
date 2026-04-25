@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "email": "you@example.com",
+    "username": "vibehunter",
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "DD/MM/YYYY",
+    "password": "At least 8 characters",
+    "recoveryCode": "123456",
+    "bio": "Share what kind of places you like...",
+    "labels": {
+      "email": "Email",
+      "username": "Username",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dateOfBirth": "Date of Birth",
+      "password": "Password",
+      "newPassword": "New Password",
+      "recoveryEmail": "Recovery Email",
+      "recoveryCode": "Recovery Code",
+      "verificationCode": "Verification Code",
+      "bio": "Bio / Description"
+    },
+    "actions": {
+      "login": "Log In",
+      "register": "Sign Up",
+      "next": "Next",
+      "completeRegistration": "Complete Registration",
+      "sendRecoveryEmail": "Send Recovery Email",
+      "resetPassword": "Reset Password",
+      "verifyEmail": "Verify Email",
+      "continueWithGoogle": "Continue with Google",
+      "continueAsGuest": "Continue as Guest",
+      "backToLogin": "Back to Login"
+    }
+  }
+}
