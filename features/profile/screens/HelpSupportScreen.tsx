@@ -9,11 +9,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import {
-  getHelpSupportContent,
-  type ContactOption,
-  type FaqItem,
-} from '@/api';
+import { getHelpSupportContent } from '@/api/profileApi';
+import type { ContactOption, FaqItem } from '@/api/types';
 import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { SearchField } from '@/shared/ui/SearchField';
 import {
@@ -26,6 +23,7 @@ export default function HelpSupportScreen() {
   const { colors } = useAppTheme();
   const [query, setQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [contactOptions, setContactOptions] = useState<ContactOption[]>([]);
   const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
   const [quickLinks, setQuickLinks] = useState<string[]>([]);
@@ -41,6 +39,7 @@ export default function HelpSupportScreen() {
       setContactOptions(payload.contactOptions);
       setFaqItems(payload.faqItems);
       setQuickLinks(payload.quickLinks);
+      setLoading(false);
     });
 
     return () => {
@@ -61,7 +60,7 @@ export default function HelpSupportScreen() {
     );
   });
 
-  if (contactOptions.length === 0) {
+  if (loading) {
     return (
       <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
         <ActivityIndicator color={colors.primary} size="large" />
@@ -82,7 +81,7 @@ export default function HelpSupportScreen() {
           />
 
           <SupportSection title="Contact Us">
-            {contactOptions.map((option) => (
+            {contactOptions.length > 0 ? contactOptions.map((option) => (
               <Pressable
                 key={option.label}
                 disabled={!option.available}
@@ -106,11 +105,13 @@ export default function HelpSupportScreen() {
                   <Ionicons color={colors.mutedForeground} name="chevron-forward" size={18} />
                 ) : null}
               </Pressable>
-            ))}
+            )) : (
+              <EmptySectionMessage message="No contact options are configured in the backend yet." />
+            )}
           </SupportSection>
 
           <SupportSection title="Frequently Asked Questions">
-            {filteredFaqs.map((item) => {
+            {filteredFaqs.length > 0 ? filteredFaqs.map((item) => {
               const expanded = expandedFaq === item.id;
 
               return (
@@ -134,11 +135,13 @@ export default function HelpSupportScreen() {
                   ) : null}
                 </View>
               );
-            })}
+            }) : (
+              <EmptySectionMessage message="No FAQ entries are available right now." />
+            )}
           </SupportSection>
 
           <SupportSection title="Quick Links">
-            {quickLinks.map((link) => (
+            {quickLinks.length > 0 ? quickLinks.map((link) => (
               <Pressable
                 key={link}
                 style={({ pressed }) => [
@@ -151,7 +154,9 @@ export default function HelpSupportScreen() {
                 <Text style={[styles.quickLinkLabel, { color: colors.text }]}>{link}</Text>
                 <Ionicons color={colors.mutedForeground} name="chevron-forward" size={18} />
               </Pressable>
-            ))}
+            )) : (
+              <EmptySectionMessage message="No quick links are configured right now." />
+            )}
           </SupportSection>
 
           <View style={styles.footer}>
@@ -164,6 +169,12 @@ export default function HelpSupportScreen() {
       </ScrollView>
     </View>
   );
+}
+
+function EmptySectionMessage({ message }: { message: string }) {
+  const { colors } = useAppTheme();
+
+  return <Text style={[styles.emptyMessage, { color: colors.mutedForeground }]}>{message}</Text>;
 }
 
 function SupportSection({
@@ -218,6 +229,11 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
     paddingHorizontal: screenPadding,
     paddingTop: 18,
+  },
+  emptyMessage: {
+    fontFamily: bodyFontFamily,
+    fontSize: 13,
+    lineHeight: 20,
   },
   faqAnswer: {
     fontFamily: bodyFontFamily,

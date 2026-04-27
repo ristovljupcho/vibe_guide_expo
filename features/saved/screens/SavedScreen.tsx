@@ -10,11 +10,10 @@ import {
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  getSavedCollections,
-  type SavedCollectionType,
-  type VibePlace,
-} from '@/api';
+import { getFavouritePlaces } from '@/api/favouritePlaceApi';
+import { getVisitedPlaces } from '@/api/visitedPlaceApi';
+import { getWishlistPlaces } from '@/api/wishlistPlaceApi';
+import type { Place, SavedCollectionType } from '@/api/types';
 import { SavedPlaceCard } from '@/features/places/components/SavedPlaceCard';
 import { useAppTheme } from '@/shared/theme/useAppTheme';
 import {
@@ -23,7 +22,7 @@ import {
   screenPadding,
 } from '@/shared/ui/tokens';
 
-type SavedCollections = Record<SavedCollectionType, VibePlace[]>;
+type SavedCollections = Record<SavedCollectionType, Place[]>;
 
 const emptyCollections: SavedCollections = {
   favorites: [],
@@ -48,14 +47,20 @@ export default function SavedScreen() {
   useEffect(() => {
     let mounted = true;
 
-    getSavedCollections().then((savedCollections) => {
-      if (!mounted) {
-        return;
-      }
+    Promise.all([getFavouritePlaces(), getWishlistPlaces(), getVisitedPlaces()]).then(
+      ([favorites, wishlist, visited]) => {
+        if (!mounted) {
+          return;
+        }
 
-      setCollections(savedCollections);
-      setLoading(false);
-    });
+        setCollections({
+          favorites,
+          wishlist,
+          visited,
+        });
+        setLoading(false);
+      },
+    );
 
     return () => {
       mounted = false;
@@ -107,11 +112,8 @@ export default function SavedScreen() {
     }));
   }
 
-  function handleViewProfile(place: VibePlace) {
-    router.push({
-      pathname: '/place/[placeId]',
-      params: { placeId: place.id },
-    } as unknown as Href);
+  function handleViewProfile(place: Place) {
+    router.push(`/place/${place.id}` as Href);
   }
 
   return (

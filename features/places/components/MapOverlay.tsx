@@ -10,13 +10,13 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-import type { VibePlace } from '@/api';
+import type { Place } from '@/api/types';
 import { bodyFontFamily, displayFontFamily, surfaceShadow } from '@/shared/ui/tokens';
 import { useAppTheme } from '@/shared/theme/useAppTheme';
 
 type MapOverlayProps = {
   visible: boolean;
-  places: VibePlace[];
+  places: Place[];
   onClose: () => void;
   onSelectPlace: (placeId: string) => void;
 };
@@ -26,16 +26,17 @@ export function MapOverlay({ visible, places, onClose, onSelectPlace }: MapOverl
   const { width, height } = useWindowDimensions();
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const mapHeight = Math.max(420, height - 220);
+  const mappablePlaces = places.filter((place) => place.mapPosition);
 
   useEffect(() => {
     if (!visible) {
       return;
     }
 
-    setSelectedPlaceId(places[0]?.id ?? null);
-  }, [places, visible]);
+    setSelectedPlaceId(mappablePlaces[0]?.id ?? null);
+  }, [mappablePlaces, visible]);
 
-  const selectedPlace = places.find((place) => place.id === selectedPlaceId) ?? null;
+  const selectedPlace = mappablePlaces.find((place) => place.id === selectedPlaceId) ?? null;
 
   return (
     <Modal animationType="slide" presentationStyle="fullScreen" visible={visible}>
@@ -45,7 +46,9 @@ export function MapOverlay({ visible, places, onClose, onSelectPlace }: MapOverl
             <Text style={[styles.headerTitle, { color: colors.text }]}>Places Near You</Text>
             <View style={styles.locationRow}>
               <Ionicons color={colors.mutedForeground} name="locate-outline" size={12} />
-              <Text style={[styles.locationText, { color: colors.mutedForeground }]}>New York, NY</Text>
+              <Text style={[styles.locationText, { color: colors.mutedForeground }]}>
+                {selectedPlace?.location || 'Live data map'}
+              </Text>
             </View>
           </View>
           <Pressable
@@ -63,7 +66,11 @@ export function MapOverlay({ visible, places, onClose, onSelectPlace }: MapOverl
             <View style={[styles.bluePulse, { left: width / 2 - 12, top: mapHeight / 2 - 12 }]} />
             <View style={[styles.blueDot, { left: width / 2 - 6, top: mapHeight / 2 - 6 }]} />
 
-            {places.map((place) => {
+            {mappablePlaces.map((place) => {
+              if (!place.mapPosition) {
+                return null;
+              }
+
               const left = (place.mapPosition.left / 100) * (width - 48) + 12;
               const top = (place.mapPosition.top / 100) * mapHeight;
 
@@ -85,6 +92,16 @@ export function MapOverlay({ visible, places, onClose, onSelectPlace }: MapOverl
                 </Pressable>
               );
             })}
+
+            {mappablePlaces.length === 0 ? (
+              <View style={styles.emptyMapState}>
+                <Ionicons color={colors.mutedForeground} name="map-outline" size={44} />
+                <Text style={[styles.emptyMapTitle, { color: colors.text }]}>Map unavailable</Text>
+                <Text style={[styles.emptyMapText, { color: colors.mutedForeground }]}>
+                  The backend is not providing coordinates for places yet.
+                </Text>
+              </View>
+            ) : null}
           </View>
         </View>
 
@@ -190,6 +207,27 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  emptyMapState: {
+    alignItems: 'center',
+    left: 0,
+    paddingHorizontal: 24,
+    position: 'absolute',
+    right: 0,
+    top: '38%',
+  },
+  emptyMapText: {
+    fontFamily: bodyFontFamily,
+    fontSize: 14,
+    lineHeight: 22,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  emptyMapTitle: {
+    fontFamily: displayFontFamily,
+    fontSize: 22,
+    fontWeight: '600',
+    marginTop: 12,
   },
   grid: {
     overflow: 'hidden',

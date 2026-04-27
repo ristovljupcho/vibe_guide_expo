@@ -8,12 +8,12 @@ import {
   View,
 } from "react-native";
 
-import {
-  getAllPlaces,
-  getHomeFeed,
-  type HomeFeed,
-  type VibePlace,
-} from "@/api";
+import { fetchJson } from '@/api/apiClient';
+import type {
+  EventResponseDto,
+  OfferResponseDto,
+  PlaceCardResponseDto,
+} from '@/api/types';
 import { EventCard } from "@/features/events/components/EventCard";
 import { OfferCard } from "@/features/events/components/OfferCard";
 import { MapOverlay } from "@/features/places/components/MapOverlay";
@@ -35,8 +35,11 @@ const homeSectionPadding = 12;
 export default function HomeScreen() {
   const router = useRouter();
   const { colors } = useAppTheme();
-  const [feed, setFeed] = useState<HomeFeed | null>(null);
-  const [allPlaces, setAllPlaces] = useState<VibePlace[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [topPlaces, setTopPlaces] = useState<PlaceCardResponseDto[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<EventResponseDto[]>([]);
+  const [activeOffers, setActiveOffers] = useState<OfferResponseDto[]>([]);
+  const [upcomingOffers, setUpcomingOffers] = useState<OfferResponseDto[]>([]);
   const [showMap, setShowMap] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
@@ -45,17 +48,30 @@ export default function HomeScreen() {
     let mounted = true;
 
     async function load() {
-      const [homeFeed, placeList] = await Promise.all([
-        getHomeFeed(),
-        getAllPlaces(),
+      setLoading(true);
+
+      const [placesRes, upcomingEventsRes, activeOffersRes, upcomingOffersRes] = await Promise.all([
+        fetchJson<PlaceCardResponseDto[]>('/places/top'),
+        fetchJson<EventResponseDto[]>('/events/upcoming'),
+        fetchJson<OfferResponseDto[]>('/offers/active'),
+        fetchJson<OfferResponseDto[]>('/offers/upcoming'),
       ]);
 
       if (!mounted) {
         return;
       }
 
-      setFeed(homeFeed);
-      setAllPlaces(placeList);
+      setTopPlaces(
+        (placesRes ?? []).map((place) => ({
+          ...place,
+          imageUrls: place.imageUrls ?? [],
+          topTraits: place.topTraits ?? [],
+        })),
+      );
+      setUpcomingEvents(upcomingEventsRes ?? []);
+      setActiveOffers(activeOffersRes ?? []);
+      setUpcomingOffers(upcomingOffersRes ?? []);
+      setLoading(false);
     }
 
     load();
@@ -65,7 +81,26 @@ export default function HomeScreen() {
     };
   }, []);
 
-  if (!feed) {
+  const quickFilters = Array.from(
+    new Set(topPlaces.flatMap((place) => place.topTraits ?? []).filter(Boolean)),
+  ).slice(0, 8);
+
+  const filteredTopPlaces = topPlaces.filter((place) => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const matchesQuery =
+      !normalizedQuery ||
+      place.name.toLowerCase().includes(normalizedQuery) ||
+      place.description.toLowerCase().includes(normalizedQuery) ||
+      (place.topTraits ?? []).some((trait) => trait.toLowerCase().includes(normalizedQuery));
+
+    const matchesFilter =
+      !selectedFilter ||
+      (place.topTraits ?? []).some((trait) => trait.toLowerCase() === selectedFilter.toLowerCase());
+
+    return matchesQuery && matchesFilter;
+  });
+
+  if (loading) {
     return (
       <View
         style={[styles.loadingWrap, { backgroundColor: colors.background }]}
@@ -81,12 +116,9 @@ export default function HomeScreen() {
         onClose={() => setShowMap(false)}
         onSelectPlace={(placeId) => {
           setShowMap(false);
-          router.push({
-            pathname: "/place/[placeId]",
-            params: { placeId },
-          } as unknown as Href);
+          router.push(`/place/${placeId}` as Href);
         }}
-        places={allPlaces}
+        places={[]}
         visible={showMap}
       />
 
@@ -107,7 +139,7 @@ export default function HomeScreen() {
                 <ActionIconButton icon="notifications-outline" />
               </>
             }
-            subtitle={feed.locationLabel}
+            subtitle={topPlaces[0]?.address ?? ''}
             title="VibeGuide"
           />
 
@@ -122,7 +154,7 @@ export default function HomeScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
             >
-              {feed.quickFilters.map((filter) => (
+              {quickFilters.map((filter) => (
                 <FilterChip
                   key={filter}
                   label={filter}
@@ -144,14 +176,11 @@ export default function HomeScreen() {
             onPress={() => router.push("/explore" as Href)}
             title="Best Places"
           >
-            {feed.featuredPlaces.map((place) => (
+            {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
                 onPress={(placeId) =>
-                  router.push({
-                    pathname: "/place/[placeId]",
-                    params: { placeId },
-                  } as unknown as Href)
+                  router.push(`/place/${placeId}` as Href)
                 }
                 place={place}
               />
@@ -159,8 +188,8 @@ export default function HomeScreen() {
           </Section>
 
           <Section title="Daily Offers">
-            {feed.dailyOffers.map((offer) => (
-              <OfferCard key={offer.id} offer={offer} />
+            {activeOffers.map((offer) => (
+              <OfferCard badge="Active" key={offer.id} offer={offer} />
             ))}
           </Section>
 
@@ -169,8 +198,8 @@ export default function HomeScreen() {
             onPress={() => router.push("/events" as Href)}
             title="Today's Events"
           >
-            {feed.todayEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+            {upcomingEvents.map((event) => (
+              <EventCard key={event.id} event={event} type="Upcoming" />
             ))}
           </Section>
 
@@ -179,14 +208,11 @@ export default function HomeScreen() {
             onPress={() => router.push("/explore" as Href)}
             title="Trending Now"
           >
-            {feed.trendingPlaces.map((place) => (
+            {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
                 onPress={(placeId) =>
-                  router.push({
-                    pathname: "/place/[placeId]",
-                    params: { placeId },
-                  } as unknown as Href)
+                  router.push(`/place/${placeId}` as Href)
                 }
                 place={place}
               />
@@ -198,14 +224,11 @@ export default function HomeScreen() {
             onPress={() => router.push("/explore" as Href)}
             title="Near You"
           >
-            {feed.nearbyPlaces.map((place) => (
+            {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
                 onPress={(placeId) =>
-                  router.push({
-                    pathname: "/place/[placeId]",
-                    params: { placeId },
-                  } as unknown as Href)
+                  router.push(`/place/${placeId}` as Href)
                 }
                 place={place}
               />
@@ -223,6 +246,12 @@ export default function HomeScreen() {
               the filters to find the right vibe faster.
             </Text>
           </View>
+
+          <Section title="Upcoming Offers">
+            {upcomingOffers.map((offer) => (
+              <OfferCard badge="Upcoming" key={offer.id} offer={offer} />
+            ))}
+          </Section>
         </View>
       </ScrollView>
     </View>

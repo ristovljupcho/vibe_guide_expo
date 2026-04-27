@@ -8,7 +8,8 @@ import {
   View,
 } from 'react-native';
 
-import { getTraitCategories, type FilterCategory } from '@/api';
+import { getTraitCategories } from '@/api/traitApi';
+import type { FilterCategory } from '@/api/types';
 import { FilterChip } from '@/shared/ui/FilterChip';
 import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import { bodyFontFamily, screenPadding } from '@/shared/ui/tokens';

@@ -3,25 +3,31 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { VibeEvent } from '@/api';
+import type { Event, EventDateFilter, EventResponseDto } from '@/api/types';
+import { toDateParts } from '@/api/apiUtils';
 import { bodyFontFamily, displayFontFamily, surfaceShadow } from '@/shared/ui/tokens';
 import { useAppTheme } from '@/shared/theme/useAppTheme';
 
 type EventCardProps = {
-  event: VibeEvent;
+  event: Event | EventResponseDto;
   compact?: boolean;
+  type?: EventDateFilter;
 };
 
 const eventColorMap: Record<string, string> = {
-  'Live Music': '#EF4444',
-  Party: '#EC4899',
-  DJ: '#A855F7',
-  'Special Event': '#F59E0B',
+  Active: '#EF4444',
+  Upcoming: '#3B82F6',
+  Past: '#6B7280',
 };
 
-export function EventCard({ event, compact = false }: EventCardProps) {
+export function EventCard({ event, compact = false, type }: EventCardProps) {
   const { colors } = useAppTheme();
-  const badgeColor = eventColorMap[event.type] ?? colors.primary;
+  const resolvedType = 'type' in event ? event.type : type ?? 'Upcoming';
+  const badgeColor = eventColorMap[resolvedType] ?? colors.primary;
+  const imageUri = 'image' in event ? event.image : event.imageUrl;
+  const title = 'title' in event ? event.title : event.name;
+  const { date, time } =
+    'date' in event && 'time' in event ? event : toDateParts(event.startDate, event.endDate);
 
   return (
     <Pressable
@@ -36,20 +42,20 @@ export function EventCard({ event, compact = false }: EventCardProps) {
         },
       ]}>
       <View style={styles.imageWrap}>
-        <Image contentFit="cover" source={{ uri: event.image }} style={styles.image} />
+        <Image contentFit="cover" source={{ uri: imageUri }} style={styles.image} />
         <View style={[styles.badge, { backgroundColor: badgeColor }]}>
-          <Text style={[styles.badgeText, { color: colors.primaryForeground }]}>{event.type}</Text>
+          <Text style={[styles.badgeText, { color: colors.primaryForeground }]}>{resolvedType}</Text>
         </View>
       </View>
 
       <View style={styles.content}>
         <Text numberOfLines={1} style={[styles.title, { color: colors.text }]}>
-          {event.title}
+          {title}
         </Text>
         <View style={styles.metaGroup}>
           <MetaRow color={colors.mutedForeground} icon="location-outline" text={event.placeName} />
-          <MetaRow color={colors.mutedForeground} icon="calendar-outline" text={event.date} />
-          <MetaRow color={colors.mutedForeground} icon="time-outline" text={event.time} />
+          <MetaRow color={colors.mutedForeground} icon="calendar-outline" text={date} />
+          <MetaRow color={colors.mutedForeground} icon="time-outline" text={time} />
         </View>
       </View>
     </Pressable>

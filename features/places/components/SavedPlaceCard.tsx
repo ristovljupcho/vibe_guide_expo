@@ -14,16 +14,12 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import type { SavedCollectionType, VibePlace } from '@/api';
+import type { Place, SavedCollectionType } from '@/api/types';
 import { useAppTheme } from '@/shared/theme/useAppTheme';
-import {
-  bodyFontFamily,
-  displayFontFamily,
-  surfaceShadow,
-} from '@/shared/ui/tokens';
+import { bodyFontFamily, displayFontFamily, surfaceShadow } from '@/shared/ui/tokens';
 
 type SavedPlaceCardProps = {
-  place: VibePlace;
+  place: Place;
   type: SavedCollectionType;
   onRemove?: (placeId: string, collectionType: SavedCollectionType) => void;
   onUpdateNote?: (
@@ -31,7 +27,7 @@ type SavedPlaceCardProps = {
     collectionType: SavedCollectionType,
     nextNote: string,
   ) => void;
-  onViewProfile?: (place: VibePlace) => void;
+  onViewProfile?: (place: Place) => void;
 };
 
 function getActionIconName(
@@ -168,11 +164,7 @@ export function SavedPlaceCard({
             },
           ]}>
           <View style={styles.imageRail}>
-            <Image
-              contentFit="cover"
-              source={{ uri: place.image }}
-              style={styles.image}
-            />
+            <Image contentFit="cover" source={{ uri: place.image }} style={styles.image} />
           </View>
 
           <View style={styles.content}>
@@ -182,14 +174,10 @@ export function SavedPlaceCard({
               </Text>
 
               <View style={styles.metaRow}>
-                <Ionicons
-                  color={colors.mutedForeground}
-                  name="location-outline"
-                  size={13}
-                />
+                <Ionicons color={colors.mutedForeground} name="location-outline" size={13} />
                 <Text numberOfLines={1} style={[styles.metaText, { color: colors.mutedForeground }]}>
                   {place.location}
-                  {place.distance ? ` • ${place.distance}` : ''}
+                  {place.distance ? ` - ${place.distance}` : ''}
                 </Text>
               </View>
 
@@ -200,13 +188,11 @@ export function SavedPlaceCard({
                     {place.rating ?? 4.5}
                   </Text>
                 </View>
-                <Text style={[styles.ratingDivider, { color: colors.mutedForeground }]}>
-                  /
-                </Text>
+                <Text style={[styles.ratingDivider, { color: colors.mutedForeground }]}>/</Text>
                 <View style={styles.ratingGroup}>
                   <Ionicons color={colors.accent} name="star" size={14} />
                   <Text style={[styles.ratingText, { color: colors.text }]}>
-                    {place.userRating ?? '—'}
+                    {place.userRating ?? '--'}
                   </Text>
                 </View>
               </View>
@@ -215,10 +201,7 @@ export function SavedPlaceCard({
                 {place.traits.slice(0, 2).map((trait) => (
                   <View
                     key={trait}
-                    style={[
-                      styles.tag,
-                      { backgroundColor: withAlpha(colors.accent, '24') },
-                    ]}>
+                    style={[styles.tag, { backgroundColor: withAlpha(colors.accent, '24') }]}>
                     <Text style={[styles.tagText, { color: colors.accent }]}>{trait}</Text>
                   </View>
                 ))}
@@ -228,11 +211,7 @@ export function SavedPlaceCard({
         </Pressable>
       </Animated.View>
 
-      <Modal
-        animationType="fade"
-        onRequestClose={closeDetailModal}
-        transparent
-        visible={showDetailModal}>
+      <Modal animationType="fade" onRequestClose={closeDetailModal} transparent visible={showDetailModal}>
         <View style={styles.modalOverlay}>
           <Pressable onPress={closeDetailModal} style={styles.modalBackdrop} />
           <View
@@ -240,29 +219,18 @@ export function SavedPlaceCard({
               styles.modalCard,
               {
                 backgroundColor: colors.card,
-                shadowColor: colors.shadow,
               },
             ]}>
             <View style={styles.modalImageWrap}>
-              <Image
-                contentFit="cover"
-                source={{ uri: place.image }}
-                style={styles.modalImage}
-              />
+              <Image contentFit="cover" source={{ uri: place.image }} style={styles.modalImage} />
               <LinearGradient
-                colors={[
-                  'rgba(0,0,0,0.82)',
-                  'rgba(0,0,0,0.42)',
-                  'rgba(0,0,0,0.06)',
-                ]}
+                colors={['rgba(0,0,0,0.82)', 'rgba(0,0,0,0.42)', 'rgba(0,0,0,0.06)']}
                 locations={[0, 0.48, 1]}
                 style={StyleSheet.absoluteFill}
               />
 
               <View style={styles.modalHeaderRow}>
-                <Text
-                  numberOfLines={2}
-                  style={[styles.modalTitle, { color: '#FFFFFF' }]}>
+                <Text numberOfLines={2} style={[styles.modalTitle, { color: '#FFFFFF' }]}>
                   {place.name}
                 </Text>
 
@@ -304,14 +272,10 @@ export function SavedPlaceCard({
               style={styles.modalScroll}
               showsVerticalScrollIndicator={false}>
               <View style={styles.locationRow}>
-                <Ionicons
-                  color={colors.mutedForeground}
-                  name="location-outline"
-                  size={16}
-                />
+                <Ionicons color={colors.mutedForeground} name="location-outline" size={16} />
                 <Text style={[styles.locationText, { color: colors.mutedForeground }]}>
                   {place.location}
-                  {place.distance ? ` • ${place.distance}` : ''}
+                  {place.distance ? ` - ${place.distance}` : ''}
                 </Text>
               </View>
 
@@ -321,28 +285,20 @@ export function SavedPlaceCard({
                   <Text style={[styles.modalRatingValue, { color: colors.text }]}>
                     {place.rating ?? 4.5}
                   </Text>
-                  <Text
-                    style={[styles.modalRatingLabel, { color: colors.mutedForeground }]}>
+                  <Text style={[styles.modalRatingLabel, { color: colors.mutedForeground }]}>
                     Overall
                   </Text>
                 </View>
 
                 {place.userRating ? (
                   <>
-                    <Text
-                      style={[styles.modalRatingBullet, { color: colors.mutedForeground }]}>
-                      •
-                    </Text>
+                    <Text style={[styles.modalRatingBullet, { color: colors.mutedForeground }]}>-</Text>
                     <View style={styles.modalRatingGroup}>
                       <Ionicons color={colors.accent} name="star" size={16} />
                       <Text style={[styles.modalRatingValue, { color: colors.text }]}>
                         {place.userRating}
                       </Text>
-                      <Text
-                        style={[
-                          styles.modalRatingLabel,
-                          { color: colors.mutedForeground },
-                        ]}>
+                      <Text style={[styles.modalRatingLabel, { color: colors.mutedForeground }]}>
                         Your Rating
                       </Text>
                     </View>
@@ -354,13 +310,8 @@ export function SavedPlaceCard({
                 {place.traits.map((trait) => (
                   <View
                     key={trait}
-                    style={[
-                      styles.modalTag,
-                      { backgroundColor: withAlpha(colors.accent, '24') },
-                    ]}>
-                    <Text style={[styles.modalTagText, { color: colors.accent }]}>
-                      {trait}
-                    </Text>
+                    style={[styles.modalTag, { backgroundColor: withAlpha(colors.accent, '24') }]}>
+                    <Text style={[styles.modalTagText, { color: colors.accent }]}>{trait}</Text>
                   </View>
                 ))}
               </View>
@@ -376,9 +327,7 @@ export function SavedPlaceCard({
                   styles.notesCard,
                   {
                     backgroundColor:
-                      colorScheme === 'dark'
-                        ? 'rgba(255,255,255,0.06)'
-                        : 'rgba(17,24,39,0.04)',
+                      colorScheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(17,24,39,0.04)',
                   },
                 ]}>
                 <View style={styles.notesHeader}>
@@ -394,11 +343,7 @@ export function SavedPlaceCard({
                           opacity: pressed ? 0.85 : 1,
                         },
                       ]}>
-                      <MaterialCommunityIcons
-                        color={colors.primary}
-                        name="pencil"
-                        size={16}
-                      />
+                      <MaterialCommunityIcons color={colors.primary} name="pencil" size={16} />
                     </Pressable>
                   ) : null}
                 </View>
@@ -431,11 +376,7 @@ export function SavedPlaceCard({
                             opacity: pressed ? 0.88 : 1,
                           },
                         ]}>
-                        <Text
-                          style={[
-                            styles.noteActionText,
-                            { color: colors.primaryForeground },
-                          ]}>
+                        <Text style={[styles.noteActionText, { color: colors.primaryForeground }]}>
                           Save
                         </Text>
                       </Pressable>
@@ -448,9 +389,7 @@ export function SavedPlaceCard({
                             opacity: pressed ? 0.88 : 1,
                           },
                         ]}>
-                        <Text style={[styles.noteActionText, { color: colors.text }]}>
-                          Cancel
-                        </Text>
+                        <Text style={[styles.noteActionText, { color: colors.text }]}>Cancel</Text>
                       </Pressable>
                     </View>
                   </View>
@@ -477,28 +416,20 @@ export function SavedPlaceCard({
                   colors={[colors.primary, colors.accent]}
                   start={{ x: 0, y: 0.5 }}
                   end={{ x: 1, y: 0.5 }}
-                  style={[
-                    styles.profileButton,
-                    {
-                      shadowColor: colors.primary,
-                    },
-                  ]}>
+                  style={styles.profileButton}>
                   <Text style={styles.profileButtonText}>View Full Profile</Text>
                 </LinearGradient>
               </Pressable>
             </View>
 
             {showRemoveConfirm ? (
-              <Pressable
-                onPress={() => setShowRemoveConfirm(false)}
-                style={styles.confirmOverlay}>
+              <Pressable onPress={() => setShowRemoveConfirm(false)} style={styles.confirmOverlay}>
                 <Pressable
                   onPress={(event) => event.stopPropagation()}
                   style={[
                     styles.confirmCard,
                     {
                       backgroundColor: colors.card,
-                      shadowColor: colors.shadow,
                     },
                   ]}>
                   <View
@@ -543,11 +474,7 @@ export function SavedPlaceCard({
                           opacity: pressed ? 0.9 : 1,
                         },
                       ]}>
-                      <Text
-                        style={[
-                          styles.confirmButtonText,
-                          { color: '#FFFFFF' },
-                        ]}>
+                      <Text style={[styles.confirmButtonText, { color: '#FFFFFF' }]}>
                         Remove
                       </Text>
                     </Pressable>
@@ -679,18 +606,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   modalCard: {
+    boxShadow: '0px 14px 24px rgba(17,24,39,0.24)',
     borderRadius: 24,
     elevation: 12,
     flexShrink: 1,
     maxHeight: '90%',
     maxWidth: 380,
     overflow: 'hidden',
-    shadowOffset: {
-      width: 0,
-      height: 14,
-    },
-    shadowOpacity: 0.24,
-    shadowRadius: 24,
     width: '100%',
   },
   modalBackdrop: {
@@ -854,15 +776,10 @@ const styles = StyleSheet.create({
   },
   profileButton: {
     alignItems: 'center',
+    boxShadow: '0px 8px 18px rgba(99,102,241,0.24)',
     borderRadius: 14,
     justifyContent: 'center',
     minHeight: 52,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.24,
-    shadowRadius: 18,
   },
   profileButtonText: {
     color: '#FFFFFF',

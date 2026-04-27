@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import { getProfileData, type ProfileData } from '@/api';
+import { getProfileData } from '@/api/profileApi';
+import type { Profile } from '@/api/types';
 import { ScreenHeader } from '@/shared/ui/ScreenHeader';
 import {
   bodyFontFamily,
@@ -21,7 +22,8 @@ import { useAppTheme } from '@/shared/theme/useAppTheme';
 
 export default function EditProfileScreen() {
   const { colors } = useAppTheme();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     fullName: '',
     username: '',
@@ -40,6 +42,12 @@ export default function EditProfileScreen() {
       }
 
       setProfile(payload);
+      setLoading(false);
+
+      if (!payload) {
+        return;
+      }
+
       setForm({
         fullName: payload.fullName,
         username: payload.username.replace('@', ''),
@@ -55,10 +63,25 @@ export default function EditProfileScreen() {
     };
   }, []);
 
-  if (!profile) {
+  if (loading) {
     return (
       <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
         <ActivityIndicator color={colors.primary} size="large" />
+      </View>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <ScreenHeader showBackButton title="Edit Profile" />
+        <View style={styles.emptyWrap}>
+          <Ionicons color={colors.mutedForeground} name="person-outline" size={52} />
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>Nothing to edit yet</Text>
+          <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>
+            The backend does not currently return profile data for this user.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -215,6 +238,25 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
     paddingHorizontal: screenPadding,
     paddingTop: 18,
+  },
+  emptyText: {
+    fontFamily: bodyFontFamily,
+    fontSize: 14,
+    lineHeight: 22,
+    maxWidth: 260,
+    textAlign: 'center',
+  },
+  emptyTitle: {
+    fontFamily: displayFontFamily,
+    fontSize: 22,
+    fontWeight: '600',
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+    justifyContent: 'center',
+    paddingHorizontal: screenPadding,
   },
   fieldInput: {
     borderRadius: 18,

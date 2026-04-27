@@ -3,12 +3,13 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import type { VibePlace } from '@/api';
-import { bodyFontFamily, displayFontFamily, surfaceShadow } from '@/shared/ui/tokens';
+import type { Place, PlaceCardResponseDto } from '@/api/types';
+import { formatEnumLabel, mapPriceLevel } from '@/api/apiUtils';
 import { useAppTheme } from '@/shared/theme/useAppTheme';
+import { bodyFontFamily, displayFontFamily, surfaceShadow } from '@/shared/ui/tokens';
 
 type PlaceCardProps = {
-  place: VibePlace;
+  place: Place | PlaceCardResponseDto;
   onPress?: (placeId: string) => void;
   compact?: boolean;
 };
@@ -16,6 +17,12 @@ type PlaceCardProps = {
 export function PlaceCard({ place, onPress, compact = false }: PlaceCardProps) {
   const { colors } = useAppTheme();
   const [saved, setSaved] = useState(false);
+  const isMappedPlace = 'image' in place;
+  const imageUri = isMappedPlace ? place.image : place.imageUrls?.[0] ?? '';
+  const location = isMappedPlace ? place.location : place.address ?? '';
+  const type = isMappedPlace ? place.type : formatEnumLabel(place.primaryType);
+  const price = isMappedPlace ? place.price : mapPriceLevel(place.priceLevel);
+  const traits = isMappedPlace ? place.traits : place.topTraits ?? [];
 
   return (
     <Pressable
@@ -31,7 +38,7 @@ export function PlaceCard({ place, onPress, compact = false }: PlaceCardProps) {
         },
       ]}>
       <View style={styles.imageWrap}>
-        <Image contentFit="cover" source={{ uri: place.image }} style={styles.image} />
+        <Image contentFit="cover" source={{ uri: imageUri }} style={styles.image} />
         <Pressable
           onPress={() => setSaved((current) => !current)}
           style={({ pressed }) => [
@@ -61,17 +68,28 @@ export function PlaceCard({ place, onPress, compact = false }: PlaceCardProps) {
         <View style={styles.locationRow}>
           <Ionicons color={colors.mutedForeground} name="location-outline" size={14} />
           <Text numberOfLines={1} style={[styles.locationText, { color: colors.mutedForeground }]}>
-            {place.location}
-            {place.distance ? ` • ${place.distance}` : ''}
+            {location}
+            {isMappedPlace && place.distance ? ` - ${place.distance}` : ''}
           </Text>
         </View>
 
         <View style={styles.tagsWrap}>
-          {place.traits.slice(0, 3).map((trait) => (
+          {traits.slice(0, 3).map((trait) => (
             <View key={trait} style={[styles.tag, { backgroundColor: `${colors.accent}20` }]}>
               <Text style={[styles.tagText, { color: colors.accent }]}>{trait}</Text>
             </View>
           ))}
+        </View>
+
+        <View style={styles.metaInline}>
+          <Text numberOfLines={1} style={[styles.metaInlineText, { color: colors.mutedForeground }]}>
+            {type}
+          </Text>
+          {price ? (
+            <Text numberOfLines={1} style={[styles.metaInlineText, { color: colors.mutedForeground }]}>
+              {price}
+            </Text>
+          ) : null}
         </View>
 
         <Text numberOfLines={1} style={[styles.description, { color: colors.mutedForeground }]}>
@@ -117,6 +135,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 6,
+  },
+  metaInline: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  metaInlineText: {
+    fontFamily: bodyFontFamily,
+    fontSize: 12,
   },
   locationText: {
     flex: 1,

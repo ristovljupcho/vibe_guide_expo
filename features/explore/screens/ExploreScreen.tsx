@@ -10,7 +10,9 @@ import {
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getExploreFilters, searchPlaces, type FilterCategory, type VibePlace } from '@/api';
+import { getExplorePlaces } from '@/api/placeApi';
+import { getExploreFilters } from '@/api/traitApi';
+import type { FilterCategory, PlaceCardResponseDto } from '@/api/types';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { FilterChip } from '@/shared/ui/FilterChip';
 import { ModalSheet } from '@/shared/ui/ModalSheet';
@@ -24,11 +26,29 @@ export default function ExploreScreen() {
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<VibePlace[]>([]);
+  // Full list from the last backend fetch — never filtered by query.
+  const [allPlaces, setAllPlaces] = useState<PlaceCardResponseDto[]>([]);
   const [filterCategories, setFilterCategories] = useState<FilterCategory[]>([]);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+
+  // What the user is toggling inside the modal (not yet submitted).
+  const [pendingFilters, setPendingFilters] = useState<string[]>([]);
+  // What was last applied — drives the actual fetch.
+  const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
+
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Client-side text filter — no network call.
+  const results = query.trim()
+    ? allPlaces.filter((place) => {
+        const q = query.trim().toLowerCase();
+        return (
+          place.name.toLowerCase().includes(q) ||
+          place.description.toLowerCase().includes(q) ||
+          (place.topTraits ?? []).some((trait) => trait.toLowerCase().includes(q))
+        );
+      })
+    : allPlaces;
 
   useEffect(() => {
     let mounted = true;
@@ -44,29 +64,57 @@ export default function ExploreScreen() {
     };
   }, []);
 
+  // Fetches only when appliedFilters change — text search never triggers a request.
   useEffect(() => {
     let mounted = true;
     setLoading(true);
 
-    searchPlaces(query, selectedFilters).then((places) => {
+    getExplorePlaces(appliedFilters).then((places) => {
       if (!mounted) {
         return;
       }
 
-      setResults(places);
+      setAllPlaces(places);
       setLoading(false);
     });
 
     return () => {
       mounted = false;
     };
-  }, [query, selectedFilters]);
+  }, [appliedFilters]);
 
-  const toggleFilter = (filter: string) => {
-    setSelectedFilters((current) =>
-      current.includes(filter) ? current.filter((item) => item !== filter) : [...current, filter]
+  function togglePending(filter: string) {
+    setPendingFilters((current) =>
+      current.includes(filter) ? current.filter((f) => f !== filter) : [...current, filter],
     );
-  };
+  }
+
+  function applyFilters() {
+    setAppliedFilters(pendingFilters);
+    setShowFilters(false);
+  }
+
+  function clearFilters() {
+    setPendingFilters([]);
+  }
+
+  function openFilters() {
+    // Seed pending with whatever is currently applied so the modal reflects the active state.
+    setPendingFilters(appliedFilters);
+    setShowFilters(true);
+  }
+
+  function closeFilters() {
+    // Discard any in-modal changes that weren't applied.
+    setPendingFilters(appliedFilters);
+    setShowFilters(false);
+  }
+
+  function removeAppliedFilter(filter: string) {
+    const next = appliedFilters.filter((f) => f !== filter);
+    setAppliedFilters(next);
+    setPendingFilters(next);
+  }
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
@@ -74,7 +122,7 @@ export default function ExploreScreen() {
         footer={
           <View style={styles.modalFooter}>
             <Pressable
-              onPress={() => setSelectedFilters([])}
+              onPress={clearFilters}
               style={({ pressed }) => [
                 styles.footerButton,
                 { backgroundColor: colors.secondary, opacity: pressed ? 0.82 : 1 },
@@ -82,7 +130,7 @@ export default function ExploreScreen() {
               <Text style={[styles.footerButtonText, { color: colors.text }]}>Clear All</Text>
             </Pressable>
             <Pressable
-              onPress={() => setShowFilters(false)}
+              onPress={applyFilters}
               style={({ pressed }) => [
                 styles.footerButton,
                 { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 },
@@ -93,7 +141,7 @@ export default function ExploreScreen() {
             </Pressable>
           </View>
         }
-        onClose={() => setShowFilters(false)}
+        onClose={closeFilters}
         title="Filters"
         visible={showFilters}>
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -106,8 +154,8 @@ export default function ExploreScreen() {
                     <FilterChip
                       key={option}
                       label={option}
-                      onPress={() => toggleFilter(option)}
-                      selected={selectedFilters.includes(option)}
+                      onPress={() => togglePending(option)}
+                      selected={pendingFilters.includes(option)}
                     />
                   ))}
                 </View>
@@ -131,19 +179,24 @@ export default function ExploreScreen() {
               <SearchField onChangeText={setQuery} placeholder="Search places..." value={query} />
             </View>
             <ActionIconButton
-              active={showFilters || selectedFilters.length > 0}
+              active={showFilters || appliedFilters.length > 0}
               icon="options-outline"
-              onPress={() => setShowFilters((current) => !current)}
+              onPress={openFilters}
             />
           </View>
 
-          {selectedFilters.length > 0 ? (
+          {appliedFilters.length > 0 ? (
             <ScrollView
               contentContainerStyle={styles.activeFilters}
               horizontal
               showsHorizontalScrollIndicator={false}>
-              {selectedFilters.map((filter) => (
-                <FilterChip key={filter} label={filter} onPress={() => toggleFilter(filter)} selected />
+              {appliedFilters.map((filter) => (
+                <FilterChip
+                  key={filter}
+                  label={filter}
+                  onRemove={() => removeAppliedFilter(filter)}
+                  selected
+                />
               ))}
             </ScrollView>
           ) : null}
@@ -164,12 +217,7 @@ export default function ExploreScreen() {
                 <PlaceCard
                   key={place.id}
                   compact
-                  onPress={(placeId) =>
-                    router.push({
-                      pathname: '/place/[placeId]',
-                      params: { placeId },
-                    } as unknown as Href)
-                  }
+                  onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
                   place={place}
                 />
               ))}

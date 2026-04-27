@@ -12,7 +12,8 @@ import { useClerk } from '@clerk/expo';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getProfileData, type ProfileData } from '@/api';
+import { getProfileData } from '@/api/profileApi';
+import type { Profile } from '@/api/types';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { useAppColorScheme } from '@/shared/theme/ColorSchemeProvider';
 import { bodyFontFamily, displayFontFamily, screenPadding } from '@/shared/ui/tokens';
@@ -40,7 +41,8 @@ export default function ProfileScreen() {
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { colorScheme, toggleColorScheme } = useAppColorScheme();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
@@ -49,6 +51,7 @@ export default function ProfileScreen() {
     getProfileData().then((payload) => {
       if (mounted) {
         setProfile(payload);
+        setLoading(false);
       }
     });
 
@@ -68,10 +71,22 @@ export default function ProfileScreen() {
     }
   };
 
-  if (!profile) {
+  if (loading) {
     return (
       <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
         <ActivityIndicator color={colors.primary} size="large" />
+      </View>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <View style={[styles.emptyWrap, { backgroundColor: colors.background }]}>
+        <Ionicons color={colors.mutedForeground} name="person-circle-outline" size={56} />
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>Profile unavailable</Text>
+        <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>
+          No profile endpoint is available for the current user yet.
+        </Text>
       </View>
     );
   }
@@ -196,6 +211,25 @@ const styles = StyleSheet.create({
   content: {
     gap: 22,
     paddingBottom: 28,
+    paddingHorizontal: screenPadding,
+  },
+  emptyText: {
+    fontFamily: bodyFontFamily,
+    fontSize: 14,
+    lineHeight: 22,
+    maxWidth: 260,
+    textAlign: 'center',
+  },
+  emptyTitle: {
+    fontFamily: displayFontFamily,
+    fontSize: 22,
+    fontWeight: '600',
+  },
+  emptyWrap: {
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+    justifyContent: 'center',
     paddingHorizontal: screenPadding,
   },
   loadingWrap: {

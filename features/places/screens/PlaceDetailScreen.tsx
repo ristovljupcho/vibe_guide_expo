@@ -14,7 +14,14 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getPlaceById, type VibePlace } from '@/api';
+import { fetchJson } from '@/api/apiClient';
+import { formatEnumLabel, mapPriceLevel } from '@/api/apiUtils';
+import type {
+  EventResponseDto,
+  OfferResponseDto,
+  PlaceResponseDto,
+  TraitCarouselResponseDto,
+} from '@/api/types';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { EventCard } from '@/features/events/components/EventCard';
 import { OfferCard } from '@/features/events/components/OfferCard';
@@ -30,7 +37,13 @@ export default function PlaceDetailScreen() {
   const { placeId } = useLocalSearchParams<{ placeId: string }>();
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
-  const [place, setPlace] = useState<VibePlace | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [place, setPlace] = useState<PlaceResponseDto | null>(null);
+  const [traits, setTraits] = useState<TraitCarouselResponseDto[]>([]);
+  const [activeEvents, setActiveEvents] = useState<EventResponseDto[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<EventResponseDto[]>([]);
+  const [activeOffers, setActiveOffers] = useState<OfferResponseDto[]>([]);
+  const [upcomingOffers, setUpcomingOffers] = useState<OfferResponseDto[]>([]);
   const [expanded, setExpanded] = useState(false);
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
   const [favorite, setFavorite] = useState(false);
@@ -42,11 +55,43 @@ export default function PlaceDetailScreen() {
   useEffect(() => {
     let mounted = true;
 
-    getPlaceById(String(placeId)).then((item) => {
-      if (mounted) {
-        setPlace(item);
+    async function load() {
+      setLoading(true);
+
+      const [placeRes, traitsRes, activeEventsRes, upcomingEventsRes, activeOffersRes, upcomingOffersRes] =
+        await Promise.all([
+          fetchJson<PlaceResponseDto>(`/places/${String(placeId)}`),
+          fetchJson<TraitCarouselResponseDto[]>(`/places/${String(placeId)}/traits/carousel`, undefined, {
+            suppressErrors: true,
+          }),
+          fetchJson<EventResponseDto[]>(`/events/active/${String(placeId)}`, undefined, {
+            suppressErrors: true,
+          }),
+          fetchJson<EventResponseDto[]>(`/events/upcoming/${String(placeId)}`, undefined, {
+            suppressErrors: true,
+          }),
+          fetchJson<OfferResponseDto[]>(`/offers/active/${String(placeId)}`, undefined, {
+            suppressErrors: true,
+          }),
+          fetchJson<OfferResponseDto[]>(`/offers/upcoming/${String(placeId)}`, undefined, {
+            suppressErrors: true,
+          }),
+        ]);
+
+      if (!mounted) {
+        return;
       }
-    });
+
+      setPlace(placeRes);
+      setTraits(traitsRes ?? []);
+      setActiveEvents(activeEventsRes ?? []);
+      setUpcomingEvents(upcomingEventsRes ?? []);
+      setActiveOffers(activeOffersRes ?? []);
+      setUpcomingOffers(upcomingOffersRes ?? []);
+      setLoading(false);
+    }
+
+    load();
 
     return () => {
       mounted = false;
@@ -54,7 +99,7 @@ export default function PlaceDetailScreen() {
   }, [placeId]);
 
   useEffect(() => {
-    if (!place || traitsTrackWidth === 0 || place.traits.length === 0) {
+    if (!place || traitsTrackWidth === 0 || traits.length === 0) {
       return undefined;
     }
 
@@ -63,7 +108,7 @@ export default function PlaceDetailScreen() {
     const animation = Animated.loop(
       Animated.timing(traitsTranslateX, {
         toValue: -(traitsTrackWidth / 3),
-        duration: Math.max(14000, place.traits.join('').length * 260),
+        duration: Math.max(14000, traits.map((trait) => trait.name).join('').length * 260),
         easing: Easing.linear,
         useNativeDriver: true,
       }),
@@ -74,9 +119,9 @@ export default function PlaceDetailScreen() {
     return () => {
       animation.stop();
     };
-  }, [place, traitsTrackWidth, traitsTranslateX]);
+  }, [place, traits, traitsTrackWidth, traitsTranslateX]);
 
-  if (!place) {
+  if (loading) {
     return (
       <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
         <ActivityIndicator color={colors.primary} size="large" />
@@ -84,7 +129,16 @@ export default function PlaceDetailScreen() {
     );
   }
 
-  const traitsTrack = [...place.traits, ...place.traits, ...place.traits];
+  if (!place) {
+    return (
+      <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
+        <Text style={[styles.description, { color: colors.mutedForeground }]}>Unable to load place.</Text>
+      </View>
+    );
+  }
+
+  const traitNames = traits.map((trait) => trait.name);
+  const traitsTrack = [...traitNames, ...traitNames, ...traitNames];
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
@@ -137,7 +191,7 @@ export default function PlaceDetailScreen() {
           ]}>
           <Text style={[styles.placeTitle, { color: colors.text }]}>{place.name}</Text>
           <Text style={[styles.placeSubtitle, { color: colors.mutedForeground }]}>
-            {place.location}
+            {place.address}
           </Text>
         </View>
 
@@ -150,9 +204,9 @@ export default function PlaceDetailScreen() {
             contentContainerStyle={styles.galleryContent}
             horizontal
             showsHorizontalScrollIndicator={false}>
-            {place.gallery.map((image, index) => (
+            {place.imageUrls.map((image, index) => (
               <Image
-                key={`${place.id}-${index}`}
+                key={`${place.name}-${index}`}
                 contentFit="cover"
                 source={{ uri: image }}
                 style={styles.galleryImage}
@@ -198,8 +252,12 @@ export default function PlaceDetailScreen() {
                 <Ionicons color={colors.primary} name="star" size={18} />
                 <Text style={[styles.infoValue, { color: colors.text }]}>{place.rating ?? 4.5}</Text>
               </View>
-              <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>{place.type}</Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>{place.price ?? '$$'}</Text>
+              <Text style={[styles.infoLabel, { color: colors.mutedForeground }]}>
+                {formatEnumLabel(place.primaryType)}
+              </Text>
+              <Text style={[styles.infoValue, { color: colors.text }]}>
+                {mapPriceLevel(place.priceLevel) ?? '$$'}
+              </Text>
             </View>
 
             <Text style={[styles.description, { color: colors.text }]}>
@@ -220,26 +278,26 @@ export default function PlaceDetailScreen() {
           </View>
 
           <ContentSection title="Active Events" titleColor={colors.text}>
-            {place.activeEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+            {activeEvents.map((event) => (
+              <EventCard key={event.id} event={event} type="Active" />
             ))}
           </ContentSection>
 
           <ContentSection title="Daily Offers" titleColor={colors.text}>
-            {place.dailyOffers.map((offer) => (
-              <OfferCard key={offer.id} offer={offer} />
+            {activeOffers.map((offer) => (
+              <OfferCard badge="Active" key={offer.id} offer={offer} />
             ))}
           </ContentSection>
 
           <ContentSection title="Upcoming Events" titleColor={colors.text}>
-            {place.upcomingEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+            {upcomingEvents.map((event) => (
+              <EventCard key={event.id} event={event} type="Upcoming" />
             ))}
           </ContentSection>
 
           <ContentSection title="Upcoming Offers" titleColor={colors.text}>
-            {place.upcomingOffers.map((offer) => (
-              <OfferCard key={offer.id} offer={offer} />
+            {upcomingOffers.map((offer) => (
+              <OfferCard badge="Upcoming" key={offer.id} offer={offer} />
             ))}
           </ContentSection>
         </View>
