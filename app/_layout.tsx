@@ -52,15 +52,42 @@ function MissingClerkKeyScreen() {
   );
 }
 
+function decodeBase64Url(value: string) {
+  if (typeof atob !== 'function') {
+    return '';
+  }
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4);
+  return atob(padded);
+}
+
+function getClerkDomainFromPublishableKey(publishableKey: string) {
+  const encodedPayload = publishableKey.split('_').slice(2).join('_');
+  if (!encodedPayload) {
+    return undefined;
+  }
+
+  try {
+    const decoded = decodeBase64Url(encodedPayload);
+    // Newer Clerk keys may include extra metadata segments separated by "$".
+    // We only need the hostname part for web script loading.
+    const domain = decoded.split('$').find((segment) => segment.includes('.'));
+    return domain || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export default function RootLayout() {
   const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const clerkDomain = publishableKey ? getClerkDomainFromPublishableKey(publishableKey) : undefined;
 
   if (!publishableKey) {
     return <MissingClerkKeyScreen />;
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+    <ClerkProvider domain={clerkDomain} publishableKey={publishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
         <ColorSchemeProvider>
           <RootNavigator />
