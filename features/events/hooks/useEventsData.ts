@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { getEventsPaginated } from '@/api/eventApi';
 
 interface EventsQueryParams {
-  placeName?: string;
   startDate?: string;
   endDate?: string;
   page: number;

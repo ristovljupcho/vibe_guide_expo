@@ -114,12 +114,11 @@ export default function EventsScreen() {
 
   const queryParams = useMemo(
     () => ({
-      placeName: debouncedQuery || undefined,
       startDate: appliedFrom ? toStartDateTime(appliedFrom) : undefined,
       endDate: appliedTo ? toEndDateTime(appliedTo) : undefined,
       page,
     }),
-    [debouncedQuery, appliedFrom, appliedTo, page],
+    [appliedFrom, appliedTo, page],
   );
 
   const { data: pageData = EMPTY_PAGE, isLoading: loading, isFetching } = useEventsData(queryParams);
@@ -131,7 +130,12 @@ export default function EventsScreen() {
     }
   }, [pageData, loading, isFetching]);
 
-  const events = pageData.content.map((dto) => buildEvent(dto, 'Active'));
+  const events = useMemo(() => {
+    const all = pageData.content.map((dto) => buildEvent(dto, 'Active'));
+    if (!debouncedQuery) return all;
+    const q = debouncedQuery.toLowerCase();
+    return all.filter((e) => e.placeName?.toLowerCase().includes(q) || e.title?.toLowerCase().includes(q));
+  }, [pageData.content, debouncedQuery]);
 
   // --- Pending filter handlers ---
 

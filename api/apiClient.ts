@@ -10,7 +10,7 @@ const API_BASE_URL = (() => {
   }
   return process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/+$/, '') ?? '';
 })();
-const DEFAULT_USER_ID = process.env.EXPO_PUBLIC_DEFAULT_USER_ID ?? '00000000-0000-0000-0000-000000000001';
+const DEFAULT_USER_ID = process.env.EXPO_PUBLIC_DEFAULT_USER_ID ?? '';
 const DEFAULT_TIMEOUT_MS = 15000;
 
 export function getApiBaseUrl() {

@@ -15,7 +15,6 @@ const EMPTY_PAGE: EventsPage = {
 };
 
 export async function getEventsPaginated(params: {
-  placeName?: string;
   /** ISO local date-time string, e.g. "2024-01-15T00:00:00" */
   startDate?: string;
   /** ISO local date-time string, e.g. "2024-01-20T23:59:59" */
@@ -23,7 +22,6 @@ export async function getEventsPaginated(params: {
   page: number;
 }): Promise<EventsPage> {
   const result = await fetchJson<EventsPage>('/events/paginated', {
-    ...(params.placeName ? { placeName: params.placeName } : {}),
     ...(params.startDate ? { startDate: params.startDate } : {}),
     ...(params.endDate ? { endDate: params.endDate } : {}),
     page: params.page,

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRouter, type Href } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 import { EventCard } from '@/features/events/components/EventCard';
 import { useHomeData } from '@/features/home/hooks/useHomeData';
@@ -63,7 +63,7 @@ export default function HomeScreen() {
         onClose={() => setShowMap(false)}
         onSelectPlace={(placeId) => {
           setShowMap(false);
-          router.push(`/place/${placeId}` as Href);
+          router.push({ pathname: '/place/[placeId]', params: { placeId } });
         }}
         places={[]}
         visible={showMap}
@@ -109,12 +109,12 @@ export default function HomeScreen() {
         <View style={styles.sections}>
           <Section
             actionLabel="See all"
-            onPress={() => router.push('/explore' as Href)}
+            onPress={() => router.push('/explore')}
             title="Best Places">
             {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
-                onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
+                onPress={(placeId) => router.push({ pathname: '/place/[placeId]', params: { placeId } })}
                 place={place}
               />
             ))}
@@ -128,7 +128,7 @@ export default function HomeScreen() {
 
           <Section
             actionLabel="Explore events"
-            onPress={() => router.push('/events' as Href)}
+            onPress={() => router.push('/events')}
             title="Today's Events">
             {upcomingEvents.map((event) => (
               <EventCard key={event.id} event={event} type="Upcoming" />
@@ -137,12 +137,12 @@ export default function HomeScreen() {
 
           <Section
             actionLabel="See all"
-            onPress={() => router.push('/explore' as Href)}
+            onPress={() => router.push('/explore')}
             title="Trending Now">
             {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
-                onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
+                onPress={(placeId) => router.push({ pathname: '/place/[placeId]', params: { placeId } })}
                 place={place}
               />
             ))}
@@ -150,12 +150,12 @@ export default function HomeScreen() {
 
           <Section
             actionLabel="See all"
-            onPress={() => router.push('/explore' as Href)}
+            onPress={() => router.push('/explore')}
             title="Near You">
             {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
-                onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
+                onPress={(placeId) => router.push({ pathname: '/place/[placeId]', params: { placeId } })}
                 place={place}
               />
             ))}

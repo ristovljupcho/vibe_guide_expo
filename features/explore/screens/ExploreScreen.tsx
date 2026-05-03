@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useRouter, type Href } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useExploreFilters, useExplorePlaces } from '@/features/explore/hooks/useExploreData';
@@ -181,7 +181,7 @@ export default function ExploreScreen() {
                 <PlaceCard
                   key={place.id}
                   compact
-                  onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
+                  onPress={(placeId) => router.push({ pathname: '/place/[placeId]', params: { placeId } })}
                   place={place}
                 />
               ))}

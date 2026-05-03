@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useRouter, type Href } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSavedPlaces, type SavedCollections } from '@/features/saved/hooks/useSavedPlaces';
@@ -92,7 +92,7 @@ export default function SavedScreen() {
   }
 
   function handleViewProfile(place: Place) {
-    router.push(`/place/${place.id}` as Href);
+    router.push({ pathname: '/place/[placeId]', params: { placeId: place.id } });
   }
 
   return (
