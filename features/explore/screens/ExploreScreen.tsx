@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -10,9 +10,7 @@ import {
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getExplorePlaces } from '@/api/placeApi';
-import { getExploreFilters } from '@/api/traitApi';
-import type { FilterCategory, PlaceCardResponseDto } from '@/api/types';
+import { useExploreFilters, useExplorePlaces } from '@/features/explore/hooks/useExploreData';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { FilterChip } from '@/shared/ui/FilterChip';
 import { ModalSheet } from '@/shared/ui/ModalSheet';
@@ -26,9 +24,6 @@ export default function ExploreScreen() {
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
-  // Full list from the last backend fetch — never filtered by query.
-  const [allPlaces, setAllPlaces] = useState<PlaceCardResponseDto[]>([]);
-  const [filterCategories, setFilterCategories] = useState<FilterCategory[]>([]);
 
   // What the user is toggling inside the modal (not yet submitted).
   const [pendingFilters, setPendingFilters] = useState<string[]>([]);
@@ -36,7 +31,9 @@ export default function ExploreScreen() {
   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
 
   const [showFilters, setShowFilters] = useState(false);
-  const [loading, setLoading] = useState(true);
+
+  const { data: filterCategories = [] } = useExploreFilters();
+  const { data: allPlaces = [], isLoading: loading } = useExplorePlaces(appliedFilters);
 
   // Client-side text filter — no network call.
   const results = query.trim()
@@ -49,39 +46,6 @@ export default function ExploreScreen() {
         );
       })
     : allPlaces;
-
-  useEffect(() => {
-    let mounted = true;
-
-    getExploreFilters().then((categories) => {
-      if (mounted) {
-        setFilterCategories(categories);
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Fetches only when appliedFilters change — text search never triggers a request.
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-
-    getExplorePlaces(appliedFilters).then((places) => {
-      if (!mounted) {
-        return;
-      }
-
-      setAllPlaces(places);
-      setLoading(false);
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, [appliedFilters]);
 
   function togglePending(filter: string) {
     setPendingFilters((current) =>

@@ -10,9 +10,7 @@ import {
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getFavouritePlaces } from '@/api/favouritePlaceApi';
-import { getVisitedPlaces } from '@/api/visitedPlaceApi';
-import { getWishlistPlaces } from '@/api/wishlistPlaceApi';
+import { useSavedPlaces, type SavedCollections } from '@/features/saved/hooks/useSavedPlaces';
 import type { Place, SavedCollectionType } from '@/api/types';
 import { SavedPlaceCard } from '@/features/places/components/SavedPlaceCard';
 import { useAppTheme } from '@/shared/theme/useAppTheme';
@@ -21,8 +19,6 @@ import {
   displayFontFamily,
   screenPadding,
 } from '@/shared/ui/tokens';
-
-type SavedCollections = Record<SavedCollectionType, Place[]>;
 
 const emptyCollections: SavedCollections = {
   favorites: [],
@@ -40,32 +36,15 @@ export default function SavedScreen() {
   const router = useRouter();
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const { data: remoteCollections, isLoading: loading } = useSavedPlaces();
   const [collections, setCollections] = useState<SavedCollections>(emptyCollections);
   const [activeTab, setActiveTab] = useState<SavedCollectionType>('favorites');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
-    Promise.all([getFavouritePlaces(), getWishlistPlaces(), getVisitedPlaces()]).then(
-      ([favorites, wishlist, visited]) => {
-        if (!mounted) {
-          return;
-        }
-
-        setCollections({
-          favorites,
-          wishlist,
-          visited,
-        });
-        setLoading(false);
-      },
-    );
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    if (remoteCollections) {
+      setCollections(remoteCollections);
+    }
+  }, [remoteCollections]);
 
   const tabs = [
     {

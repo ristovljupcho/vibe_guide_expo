@@ -109,9 +109,11 @@ export interface PlacePreviewResponseDto {
   id: string;
   name: string;
   description: string;
+  address: string;
   rating: number;
   primaryType: string;
   priceLevel: string;
+  imageUrls: string[];
   topTraits: string[];
 }
 

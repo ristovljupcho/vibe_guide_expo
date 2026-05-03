@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { ClerkLoaded, ClerkProvider } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
@@ -9,6 +10,15 @@ import 'react-native-reanimated';
 import { ColorSchemeProvider, useAppColorScheme } from '@/shared/theme/ColorSchemeProvider';
 import { Colors } from '@/shared/theme/colors';
 import { bodyFontFamily, displayFontFamily } from '@/shared/ui/tokens';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      retry: 1,
+    },
+  },
+});
 
 function RootNavigator() {
   const { colorScheme } = useAppColorScheme();
@@ -89,9 +99,11 @@ export default function RootLayout() {
   return (
     <ClerkProvider domain={clerkDomain} publishableKey={publishableKey} tokenCache={tokenCache}>
       <ClerkLoaded>
-        <ColorSchemeProvider>
-          <RootNavigator />
-        </ColorSchemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ColorSchemeProvider>
+            <RootNavigator />
+          </ColorSchemeProvider>
+        </QueryClientProvider>
       </ClerkLoaded>
     </ClerkProvider>
   );

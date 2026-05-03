@@ -1,5 +1,5 @@
 import { encodePathSegment, fetchJson } from './apiClient';
-import { buildEvent, buildOffer, buildPlaceBase, formatEnumLabel, matchesSearch } from './apiUtils';
+import { buildEvent, buildOffer, buildPlaceBase, matchesSearch } from './apiUtils';
 import { fetchEventDtos } from './eventApi';
 import { fetchOfferDtos } from './offerApi';
 import { getTopTraits } from './traitApi';
@@ -86,9 +86,11 @@ export async function getPlaceById(placeId: string): Promise<Place | null> {
     id: placeId,
     name: detail.name,
     description: detail.description,
+    address: detail.address,
     rating: detail.rating,
     primaryType: detail.primaryType,
     priceLevel: detail.priceLevel,
+    imageUrls: detail.imageUrls,
     topTraits: [],
   };
 

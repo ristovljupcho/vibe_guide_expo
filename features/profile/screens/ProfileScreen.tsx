@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -12,8 +12,7 @@ import { useClerk } from '@clerk/expo';
 import { useRouter, type Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getProfileData } from '@/api/profileApi';
-import type { Profile } from '@/api/types';
+import { useProfileData } from '@/features/profile/hooks/useProfileData';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { useAppColorScheme } from '@/shared/theme/ColorSchemeProvider';
 import { bodyFontFamily, displayFontFamily, screenPadding } from '@/shared/ui/tokens';
@@ -41,24 +40,8 @@ export default function ProfileScreen() {
   const { colors } = useAppTheme();
   const insets = useSafeAreaInsets();
   const { colorScheme, toggleColorScheme } = useAppColorScheme();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: profile, isLoading: loading } = useProfileData();
   const [isSigningOut, setIsSigningOut] = useState(false);
-
-  useEffect(() => {
-    let mounted = true;
-
-    getProfileData().then((payload) => {
-      if (mounted) {
-        setProfile(payload);
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const handleLogout = async () => {
     setIsSigningOut(true);

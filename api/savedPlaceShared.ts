@@ -17,9 +17,11 @@ function buildSavedPreview(
     id: collectionItem.placeId,
     name,
     description: collectionItem.description,
+    address: '',
     rating: collectionItem.rating,
     primaryType: '',
     priceLevel: '',
+    imageUrls: [],
     topTraits: [],
   };
 }

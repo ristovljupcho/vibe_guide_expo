@@ -1,4 +1,15 @@
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/+$/, '') ?? '';
+import { Platform } from 'react-native';
+
+// On web the app runs in the browser on the same machine as the dev server,
+// so localhost:8080 reaches the Spring Boot backend directly.
+// On Android emulator, 10.0.2.2 maps to the host machine's localhost.
+// On a physical device / iOS simulator, set EXPO_PUBLIC_API_BASE_URL explicitly.
+const API_BASE_URL = (() => {
+  if (Platform.OS === 'web') {
+    return process.env.EXPO_PUBLIC_API_BASE_URL_WEB?.replace(/\/+$/, '') ?? 'http://localhost:8080';
+  }
+  return process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/+$/, '') ?? '';
+})();
 const DEFAULT_USER_ID = process.env.EXPO_PUBLIC_DEFAULT_USER_ID ?? '00000000-0000-0000-0000-000000000001';
 const DEFAULT_TIMEOUT_MS = 15000;
 

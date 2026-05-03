@@ -1,85 +1,34 @@
-import { useRouter, type Href } from "expo-router";
-import { useEffect, useState, type ReactNode } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { useState, type ReactNode } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRouter, type Href } from 'expo-router';
 
-import { fetchJson } from '@/api/apiClient';
-import type {
-  EventResponseDto,
-  OfferResponseDto,
-  PlaceCardResponseDto,
-} from '@/api/types';
-import { EventCard } from "@/features/events/components/EventCard";
-import { OfferCard } from "@/features/events/components/OfferCard";
-import { MapOverlay } from "@/features/places/components/MapOverlay";
-import { PlaceCard } from "@/features/places/components/PlaceCard";
-import { useAppTheme } from "@/shared/theme/useAppTheme";
-import { ActionIconButton } from "@/shared/ui/ActionIconButton";
-import { FilterChip } from "@/shared/ui/FilterChip";
-import { ScreenHeader } from "@/shared/ui/ScreenHeader";
-import { SearchField } from "@/shared/ui/SearchField";
-import { SectionHeader } from "@/shared/ui/SectionHeader";
-import {
-  bodyFontFamily,
-  displayFontFamily,
-  screenPadding,
-} from "@/shared/ui/tokens";
+import { EventCard } from '@/features/events/components/EventCard';
+import { useHomeData } from '@/features/home/hooks/useHomeData';
+import { MapOverlay } from '@/features/places/components/MapOverlay';
+import { PlaceCard } from '@/features/places/components/PlaceCard';
+import { OfferCard } from '@/features/events/components/OfferCard';
+import { useAppTheme } from '@/shared/theme/useAppTheme';
+import { ActionIconButton } from '@/shared/ui/ActionIconButton';
+import { FilterChip } from '@/shared/ui/FilterChip';
+import { ScreenHeader } from '@/shared/ui/ScreenHeader';
+import { SearchField } from '@/shared/ui/SearchField';
+import { SectionHeader } from '@/shared/ui/SectionHeader';
+import { bodyFontFamily, displayFontFamily, screenPadding } from '@/shared/ui/tokens';
 
 const homeSectionPadding = 12;
 
 export default function HomeScreen() {
   const router = useRouter();
   const { colors } = useAppTheme();
-  const [loading, setLoading] = useState(true);
-  const [topPlaces, setTopPlaces] = useState<PlaceCardResponseDto[]>([]);
-  const [upcomingEvents, setUpcomingEvents] = useState<EventResponseDto[]>([]);
-  const [activeOffers, setActiveOffers] = useState<OfferResponseDto[]>([]);
-  const [upcomingOffers, setUpcomingOffers] = useState<OfferResponseDto[]>([]);
+  const { data, isLoading } = useHomeData();
   const [showMap, setShowMap] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-
-    async function load() {
-      setLoading(true);
-
-      const [placesRes, upcomingEventsRes, activeOffersRes, upcomingOffersRes] = await Promise.all([
-        fetchJson<PlaceCardResponseDto[]>('/places/top'),
-        fetchJson<EventResponseDto[]>('/events/upcoming'),
-        fetchJson<OfferResponseDto[]>('/offers/active'),
-        fetchJson<OfferResponseDto[]>('/offers/upcoming'),
-      ]);
-
-      if (!mounted) {
-        return;
-      }
-
-      setTopPlaces(
-        (placesRes ?? []).map((place) => ({
-          ...place,
-          imageUrls: place.imageUrls ?? [],
-          topTraits: place.topTraits ?? [],
-        })),
-      );
-      setUpcomingEvents(upcomingEventsRes ?? []);
-      setActiveOffers(activeOffersRes ?? []);
-      setUpcomingOffers(upcomingOffersRes ?? []);
-      setLoading(false);
-    }
-
-    load();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const topPlaces = data?.topPlaces ?? [];
+  const upcomingEvents = data?.upcomingEvents ?? [];
+  const activeOffers = data?.activeOffers ?? [];
+  const upcomingOffers = data?.upcomingOffers ?? [];
 
   const quickFilters = Array.from(
     new Set(topPlaces.flatMap((place) => place.topTraits ?? []).filter(Boolean)),
@@ -100,11 +49,9 @@ export default function HomeScreen() {
     return matchesQuery && matchesFilter;
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <View
-        style={[styles.loadingWrap, { backgroundColor: colors.background }]}
-      >
+      <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
         <ActivityIndicator color={colors.primary} size="large" />
       </View>
     );
@@ -122,20 +69,12 @@ export default function HomeScreen() {
         visible={showMap}
       />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[0]}
-      >
-        <View
-          style={[styles.stickyHeader, { backgroundColor: colors.background }]}
-        >
+      <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]}>
+        <View style={[styles.stickyHeader, { backgroundColor: colors.background }]}>
           <ScreenHeader
             rightActions={
               <>
-                <ActionIconButton
-                  icon="map-outline"
-                  onPress={() => setShowMap(true)}
-                />
+                <ActionIconButton icon="map-outline" onPress={() => setShowMap(true)} />
                 <ActionIconButton icon="notifications-outline" />
               </>
             }
@@ -152,16 +91,13 @@ export default function HomeScreen() {
             <ScrollView
               contentContainerStyle={styles.quickFilters}
               horizontal
-              showsHorizontalScrollIndicator={false}
-            >
+              showsHorizontalScrollIndicator={false}>
               {quickFilters.map((filter) => (
                 <FilterChip
                   key={filter}
                   label={filter}
                   onPress={() =>
-                    setSelectedFilter((current) =>
-                      current === filter ? null : filter,
-                    )
+                    setSelectedFilter((current) => (current === filter ? null : filter))
                   }
                   selected={selectedFilter === filter}
                 />
@@ -173,15 +109,12 @@ export default function HomeScreen() {
         <View style={styles.sections}>
           <Section
             actionLabel="See all"
-            onPress={() => router.push("/explore" as Href)}
-            title="Best Places"
-          >
+            onPress={() => router.push('/explore' as Href)}
+            title="Best Places">
             {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
-                onPress={(placeId) =>
-                  router.push(`/place/${placeId}` as Href)
-                }
+                onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
                 place={place}
               />
             ))}
@@ -195,9 +128,8 @@ export default function HomeScreen() {
 
           <Section
             actionLabel="Explore events"
-            onPress={() => router.push("/events" as Href)}
-            title="Today's Events"
-          >
+            onPress={() => router.push('/events' as Href)}
+            title="Today's Events">
             {upcomingEvents.map((event) => (
               <EventCard key={event.id} event={event} type="Upcoming" />
             ))}
@@ -205,15 +137,12 @@ export default function HomeScreen() {
 
           <Section
             actionLabel="See all"
-            onPress={() => router.push("/explore" as Href)}
-            title="Trending Now"
-          >
+            onPress={() => router.push('/explore' as Href)}
+            title="Trending Now">
             {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
-                onPress={(placeId) =>
-                  router.push(`/place/${placeId}` as Href)
-                }
+                onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
                 place={place}
               />
             ))}
@@ -221,15 +150,12 @@ export default function HomeScreen() {
 
           <Section
             actionLabel="See all"
-            onPress={() => router.push("/explore" as Href)}
-            title="Near You"
-          >
+            onPress={() => router.push('/explore' as Href)}
+            title="Near You">
             {filteredTopPlaces.map((place) => (
               <PlaceCard
                 key={place.id}
-                onPress={(placeId) =>
-                  router.push(`/place/${placeId}` as Href)
-                }
+                onPress={(placeId) => router.push(`/place/${placeId}` as Href)}
                 place={place}
               />
             ))}
@@ -239,11 +165,9 @@ export default function HomeScreen() {
             <Text style={[styles.footerTitle, { color: colors.text }]}>
               Built for good nights out
             </Text>
-            <Text
-              style={[styles.footerText, { color: colors.mutedForeground }]}
-            >
-              Save the spots you love, keep the places you want to try, and use
-              the filters to find the right vibe faster.
+            <Text style={[styles.footerText, { color: colors.mutedForeground }]}>
+              Save the spots you love, keep the places you want to try, and use the filters to find
+              the right vibe faster.
             </Text>
           </View>
 
@@ -272,17 +196,12 @@ function Section({
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeaderWrap}>
-        <SectionHeader
-          actionLabel={actionLabel}
-          onPress={onPress}
-          title={title}
-        />
+        <SectionHeader actionLabel={actionLabel} onPress={onPress} title={title} />
       </View>
       <ScrollView
         contentContainerStyle={styles.sectionContent}
         horizontal
-        showsHorizontalScrollIndicator={false}
-      >
+        showsHorizontalScrollIndicator={false}>
         {children}
       </ScrollView>
     </View>
@@ -303,7 +222,7 @@ const styles = StyleSheet.create({
   footerTitle: {
     fontFamily: displayFontFamily,
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   headerBody: {
     gap: 12,
@@ -311,9 +230,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: screenPadding,
   },
   loadingWrap: {
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   quickFilters: {
     gap: 10,

@@ -14,14 +14,8 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { fetchJson } from '@/api/apiClient';
 import { formatEnumLabel, mapPriceLevel } from '@/api/apiUtils';
-import type {
-  EventResponseDto,
-  OfferResponseDto,
-  PlaceResponseDto,
-  TraitCarouselResponseDto,
-} from '@/api/types';
+import { usePlaceDetail } from '@/features/places/hooks/usePlaceDetail';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { EventCard } from '@/features/events/components/EventCard';
 import { OfferCard } from '@/features/events/components/OfferCard';
@@ -37,13 +31,13 @@ export default function PlaceDetailScreen() {
   const { placeId } = useLocalSearchParams<{ placeId: string }>();
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
-  const [loading, setLoading] = useState(true);
-  const [place, setPlace] = useState<PlaceResponseDto | null>(null);
-  const [traits, setTraits] = useState<TraitCarouselResponseDto[]>([]);
-  const [activeEvents, setActiveEvents] = useState<EventResponseDto[]>([]);
-  const [upcomingEvents, setUpcomingEvents] = useState<EventResponseDto[]>([]);
-  const [activeOffers, setActiveOffers] = useState<OfferResponseDto[]>([]);
-  const [upcomingOffers, setUpcomingOffers] = useState<OfferResponseDto[]>([]);
+  const { data, isLoading: loading } = usePlaceDetail(placeId);
+  const place = data?.place ?? null;
+  const traits = data?.traits ?? [];
+  const activeEvents = data?.activeEvents ?? [];
+  const upcomingEvents = data?.upcomingEvents ?? [];
+  const activeOffers = data?.activeOffers ?? [];
+  const upcomingOffers = data?.upcomingOffers ?? [];
   const [expanded, setExpanded] = useState(false);
   const [showHeaderTitle, setShowHeaderTitle] = useState(false);
   const [favorite, setFavorite] = useState(false);
@@ -51,52 +45,6 @@ export default function PlaceDetailScreen() {
   const [visited, setVisited] = useState(false);
   const [traitsTrackWidth, setTraitsTrackWidth] = useState(0);
   const traitsTranslateX = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function load() {
-      setLoading(true);
-
-      const [placeRes, traitsRes, activeEventsRes, upcomingEventsRes, activeOffersRes, upcomingOffersRes] =
-        await Promise.all([
-          fetchJson<PlaceResponseDto>(`/places/${String(placeId)}`),
-          fetchJson<TraitCarouselResponseDto[]>(`/places/${String(placeId)}/traits/carousel`, undefined, {
-            suppressErrors: true,
-          }),
-          fetchJson<EventResponseDto[]>(`/events/active/${String(placeId)}`, undefined, {
-            suppressErrors: true,
-          }),
-          fetchJson<EventResponseDto[]>(`/events/upcoming/${String(placeId)}`, undefined, {
-            suppressErrors: true,
-          }),
-          fetchJson<OfferResponseDto[]>(`/offers/active/${String(placeId)}`, undefined, {
-            suppressErrors: true,
-          }),
-          fetchJson<OfferResponseDto[]>(`/offers/upcoming/${String(placeId)}`, undefined, {
-            suppressErrors: true,
-          }),
-        ]);
-
-      if (!mounted) {
-        return;
-      }
-
-      setPlace(placeRes);
-      setTraits(traitsRes ?? []);
-      setActiveEvents(activeEventsRes ?? []);
-      setUpcomingEvents(upcomingEventsRes ?? []);
-      setActiveOffers(activeOffersRes ?? []);
-      setUpcomingOffers(upcomingOffersRes ?? []);
-      setLoading(false);
-    }
-
-    load();
-
-    return () => {
-      mounted = false;
-    };
-  }, [placeId]);
 
   useEffect(() => {
     if (!place || traitsTrackWidth === 0 || traits.length === 0) {

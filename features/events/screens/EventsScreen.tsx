@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -10,9 +10,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getEventsPaginated } from '@/api/eventApi';
 import { buildEvent } from '@/api/apiUtils';
-import type { Event, EventsPage } from '@/api/types';
+import type { EventsPage } from '@/api/types';
+import { useEventsData } from '@/features/events/hooks/useEventsData';
 import { ActionIconButton } from '@/shared/ui/ActionIconButton';
 import { DateInput } from '@/shared/ui/DateInput';
 import { EventCard } from '@/features/events/components/EventCard';
@@ -98,8 +98,6 @@ export default function EventsScreen() {
   const [appliedTo, setAppliedTo] = useState('');
 
   const [page, setPage] = useState(0);
-  const [pageData, setPageData] = useState<EventsPage>(EMPTY_PAGE);
-  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
 
   // Debounce query so we don't fire on every keystroke.
@@ -114,29 +112,26 @@ export default function EventsScreen() {
     setPage(0);
   }, [debouncedQuery, appliedFrom, appliedTo]);
 
-  // Fetch whenever page or applied filters change.
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-
-    getEventsPaginated({
+  const queryParams = useMemo(
+    () => ({
       placeName: debouncedQuery || undefined,
       startDate: appliedFrom ? toStartDateTime(appliedFrom) : undefined,
       endDate: appliedTo ? toEndDateTime(appliedTo) : undefined,
       page,
-    }).then((data) => {
-      if (!mounted) return;
-      setPageData(data);
-      setLoading(false);
+    }),
+    [debouncedQuery, appliedFrom, appliedTo, page],
+  );
+
+  const { data: pageData = EMPTY_PAGE, isLoading: loading, isFetching } = useEventsData(queryParams);
+
+  // Scroll to top when data changes.
+  useEffect(() => {
+    if (!loading && !isFetching) {
       scrollRef.current?.scrollTo({ y: 0, animated: true });
-    });
+    }
+  }, [pageData, loading, isFetching]);
 
-    return () => {
-      mounted = false;
-    };
-  }, [debouncedQuery, appliedFrom, appliedTo, page]);
-
-  const events: Event[] = pageData.content.map((dto) => buildEvent(dto, 'Active'));
+  const events = pageData.content.map((dto) => buildEvent(dto, 'Active'));
 
   // --- Pending filter handlers ---
 
